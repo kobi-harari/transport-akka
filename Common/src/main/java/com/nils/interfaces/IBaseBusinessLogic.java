@@ -8,7 +8,7 @@ import java.util.List;
  */
 public interface IBaseBusinessLogic<T,ID extends Serializable> {
 
-    T getEntity(ID id);
+    T findById(ID id);
 
     List<T> findByIds(List<ID> ids);
 
