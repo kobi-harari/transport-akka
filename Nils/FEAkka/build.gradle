@@ -15,4 +15,5 @@ dependencies {
     compile 'com.typesafe.akka:akka-actor_2.10:2.3.0'
 
     compile 'org.slf4j:slf4j-api:1.7.6'
+    compile project(':Common')
 }
