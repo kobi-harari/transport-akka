@@ -5,6 +5,7 @@ import com.nils.interfaces.IBaseBusinessLogic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.text.StyledEditorKit;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -22,6 +23,24 @@ public class BaseBusinessLogic<T, ID extends Serializable> implements IBaseBusin
 
     public BaseBusinessLogic(Class clazz) {
         this.clazz = clazz;
+    }
+
+    @Override
+    public boolean exists(List<String> ids) {
+        logger.debug("check exists for {} by bulks ids, idList size: {}", clazz.getSimpleName(), ids.size());
+        final Boolean[] toReturn = {new Boolean(false)};
+        transportLayer.exists(clazz.getSimpleName(), ids, new ICallBack() {
+            @Override
+            public void onResponse(Response response) {
+                toReturn[0] = (Boolean) response.getMessage();
+            }
+
+            @Override
+            public void onError(Error error) {
+                //TODO
+            }
+        });
+        return toReturn[0];
     }
 
     @Override

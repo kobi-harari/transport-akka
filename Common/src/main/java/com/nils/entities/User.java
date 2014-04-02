@@ -1,5 +1,7 @@
 package com.nils.entities;
 
+import java.util.List;
+
 /**
  * Created by uri.silberstein on 4/1/14.
  */

@@ -8,6 +8,8 @@ import java.util.List;
  */
 public interface ITransportLayer<T, ID extends Serializable> {
 
+    void exists(String entityType, List<ID> ids, ICallBack callBack);
+
     void findByIds(String entityType, List<ID> ids, ICallBack callBack);
 
     void deleteEntities(String entityType, List<T> ids, ICallBack callBack);
