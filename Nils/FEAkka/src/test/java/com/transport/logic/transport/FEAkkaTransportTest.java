@@ -1,7 +1,5 @@
 package com.transport.logic.transport;
 
-import com.google.inject.internal.util.$SourceProvider;
-import com.nils.entities.transport.Request;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

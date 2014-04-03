@@ -19,7 +19,7 @@ import java.util.List;
 public class UserActor extends UntypedActor {
 
     @Inject
-    IBEUserBusinessLogic userLogic;
+    IBEUserBusinessLogic userLogic; //TODO fix this!
 
     private static final Logger logger = LoggerFactory.getLogger(UserActor.class);
 

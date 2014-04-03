@@ -17,4 +17,5 @@ public interface ITransportLayer<T, ID extends Serializable> {
     void saveEntities(String entityType, List<T> entities, ICallBack callBack);
 
     void updateEntities(String entityType, List<T> entities, ICallBack callBack);
+
 }

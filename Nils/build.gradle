@@ -8,7 +8,7 @@ repositories {
 }
 
 dependencies {
-	compile project(":BEAkka")
 	compile project(":Common")
+	compile project(":BEAkka")
 	compile project(":FEAkka")
 }
