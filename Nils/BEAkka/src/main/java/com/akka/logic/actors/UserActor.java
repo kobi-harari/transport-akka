@@ -3,6 +3,7 @@ package com.akka.logic.actors;
 import akka.actor.UntypedActor;
 import com.akka.interfaces.IBEUserBusinessLogic;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.nils.entities.User;
 import com.nils.entities.transport.Request;
 import com.nils.entities.transport.Response;
@@ -18,10 +19,12 @@ import java.util.List;
  */
 public class UserActor extends UntypedActor {
 
-    @Inject
-    IBEUserBusinessLogic userLogic; //TODO fix this!
-
     private static final Logger logger = LoggerFactory.getLogger(UserActor.class);
+    IBEUserBusinessLogic userLogic;
+
+    public UserActor(Injector injector) {
+        userLogic = injector.getInstance(IBEUserBusinessLogic.class);
+    }
 
     @Override
     public void onReceive(Object message) throws Exception {
