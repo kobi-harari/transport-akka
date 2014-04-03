@@ -13,12 +13,8 @@ import java.io.IOException;
  */
 public class FEAkkaTransportTest {
 
-
-
     @BeforeClass
     static public void setUp() throws IOException {
-        Request.Action getAc = Request.Action.GET;
-        System.out.println(getAc);
 
     }
 

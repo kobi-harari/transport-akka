@@ -5,9 +5,11 @@ import com.akka.interfaces.IBEUserBusinessLogic;
 import com.google.inject.Inject;
 import com.nils.entities.User;
 import com.nils.entities.transport.Request;
+import com.nils.entities.transport.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.util.List;
 
 
@@ -26,10 +28,12 @@ public class UserActor extends UntypedActor {
 
         if (message instanceof Request) {
             Request request = (Request) message;
+            Response response = new Response(request.getMetaData(),request.getService(),request.getAction());
             logger.debug("received message! Action: {}", request.getAction());
             switch (request.getAction()) {
                 case GET:
-                    userLogic.find((List<String>) request.getMessage());
+                    List<User> users = userLogic.find((List<String>) request.getMessage());
+                    response.setMessage((Serializable)users);
                     break;
                 case DELETE:
                     userLogic.delete((List<String>) request.getMessage());
@@ -43,7 +47,7 @@ public class UserActor extends UntypedActor {
                 default:
                     logger.error("non valid action");
             }
-            getSender().tell("done!", getSelf());
+            getSender().tell(response, getSelf());
         } else {
             logger.error("unhandled message");
             unhandled(message);

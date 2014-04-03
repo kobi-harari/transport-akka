@@ -8,7 +8,7 @@ import java.util.List;
  */
 public interface IBaseBusinessLogic<T,ID extends Serializable> {
 
-    boolean exists(List<String> ids);
+    boolean exists(List<ID> ids);
 
     List<T> find(List<ID> ids);
 

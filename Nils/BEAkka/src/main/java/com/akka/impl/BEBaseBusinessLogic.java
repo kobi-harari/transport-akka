@@ -8,30 +8,31 @@ import java.util.List;
 /**
  * Created by uri.silberstein on 4/3/14.
  */
-public class BEBaseBusinessLogic<T,ID extends Serializable> implements IBaseBusinessLogic {
+public class BEBaseBusinessLogic<T,ID extends Serializable> implements IBaseBusinessLogic<T, ID> {
+
 
     @Override
-    public boolean exists(List ids) {
+    public boolean exists(List<ID> ids) {
         return false;
     }
 
     @Override
-    public List find(List list) {
+    public List<T> find(List<ID> ids) {
         return null;
     }
 
     @Override
-    public void delete(List list) {
+    public void delete(List<ID> ids) {
 
     }
 
     @Override
-    public void save(List entities) {
+    public void save(List<T> entities) {
 
     }
 
     @Override
-    public void update(List entities) {
+    public void update(List<T> entities) {
 
     }
 }

@@ -27,7 +27,7 @@ public class FEBusinessLogic<T, ID extends Serializable> implements IBaseBusines
     }
 
     @Override
-    public boolean exists(List<String> ids) {
+    public boolean exists(List<ID> ids) {
         logger.debug("check exists for {} by bulks ids, idList size: {}", clazz.getSimpleName(), ids.size());
         final Boolean[] toReturn = {new Boolean(false)};
         transportLayer.exists(clazz.getSimpleName(), ids, new ICallBack() {
@@ -43,6 +43,7 @@ public class FEBusinessLogic<T, ID extends Serializable> implements IBaseBusines
         });
         return toReturn[0];
     }
+
 
     @Override
     public List<T> find(List<ID> ids) {
