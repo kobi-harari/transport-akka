@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by uri.silberstein on 4/2/14.
  */
-public class AccountBusinessLogic extends BaseBusinessLogic<Account, String> {
+public class AccountBusinessLogic extends BaseBusinessLogic<Account, String> implements IAccountBusinessLogic {
 
     private static final Logger logger = LoggerFactory.getLogger(AccountBusinessLogic.class);
 

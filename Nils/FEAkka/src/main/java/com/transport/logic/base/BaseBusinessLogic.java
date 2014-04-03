@@ -2,8 +2,9 @@ package com.transport.logic.base;
 
 import com.nils.entities.transport.Response;
 import com.nils.interfaces.IBaseBusinessLogic;
-import com.transport.logic.ICallBack;
-import com.transport.logic.ITransportLayer;
+import com.transport.logic.transport.AkkaTransport;
+import com.transport.logic.transport.ICallBack;
+import com.transport.logic.transport.ITransportLayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +20,7 @@ public class BaseBusinessLogic<T, ID extends Serializable> implements IBaseBusin
 
     private static final Logger logger = LoggerFactory.getLogger(BaseBusinessLogic.class);
 
-    ITransportLayer transportLayer; //TODO inject
+    ITransportLayer transportLayer = new AkkaTransport(); //TODO use IoC
     Class clazz;
 
     public BaseBusinessLogic(Class clazz) {

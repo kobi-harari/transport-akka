@@ -30,4 +30,12 @@ public class User extends BaseEntity {
     public void setAccountId(String accountId) {
         this.accountId = accountId;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "age=" + age +
+                ", accountId='" + accountId + '\'' +
+                '}';
+    }
 }

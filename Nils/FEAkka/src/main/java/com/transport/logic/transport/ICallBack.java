@@ -1,4 +1,4 @@
-package com.transport.logic;
+package com.transport.logic.transport;
 
 
 import com.nils.entities.transport.Response;

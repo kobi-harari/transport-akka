@@ -1,4 +1,4 @@
-package com.transport.logic;
+package com.transport.logic.transport;
 
 import java.io.Serializable;
 import java.util.List;
