@@ -3,7 +3,7 @@ package com.akka;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
-import com.akka.actor.Sms;
+import com.akka.actor.SmsActor;
 import com.akka.system.IocInitializer;
 import com.typesafe.config.ConfigFactory;
 import org.slf4j.Logger;
@@ -20,7 +20,7 @@ public class AkkaClient {
         system = ActorSystem.create("beactorsystem", ConfigFactory.load().getConfig("beconfig"));
 
         ActorRef actor = system.actorOf(
-                Props.create(Sms.class, IocInitializer.getInstance().getInjector())
+                Props.create(SmsActor.class, IocInitializer.getInstance().getInjector())
         );
 
         log.info("be actor is waiting and is running:: "+actor.toString());

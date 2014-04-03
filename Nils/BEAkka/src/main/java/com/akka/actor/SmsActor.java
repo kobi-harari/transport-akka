@@ -8,11 +8,11 @@ import com.google.inject.Injector;
 /**
  * Created by kobi on 4/3/14.
  */
-public class Sms extends UntypedActor {
+public class SmsActor extends UntypedActor {
     @Inject
     private ISendMessage sendMessageService;
 
-    public Sms(Injector injector) {
+    public SmsActor(Injector injector) {
         sendMessageService = injector.getInstance(ISendMessage.class);
     }
 

@@ -1,4 +1,4 @@
-package com.nils.feimpl;
+package com.transport.logic;
 
 import java.io.Serializable;
 import java.util.List;

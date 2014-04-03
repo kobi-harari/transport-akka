@@ -1,11 +1,12 @@
-package com.nils.feimpl;
+package com.transport.logic.base;
 
 import com.nils.entities.transport.Response;
 import com.nils.interfaces.IBaseBusinessLogic;
+import com.transport.logic.ICallBack;
+import com.transport.logic.ITransportLayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.text.StyledEditorKit;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.LinkedList;
