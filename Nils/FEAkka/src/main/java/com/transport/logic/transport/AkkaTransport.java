@@ -1,7 +1,5 @@
 package com.transport.logic.transport;
 
-import com.sun.xml.internal.bind.v2.model.core.ID;
-
 import java.io.Serializable;
 import java.util.List;
 

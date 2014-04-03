@@ -46,24 +46,6 @@ public class BaseBusinessLogic<T, ID extends Serializable> implements IBaseBusin
     }
 
     @Override
-    public T findById(ID id) {
-        logger.debug("find {} by Id {}", clazz.getSimpleName(), id);
-        final List<T> toReturn = new LinkedList<>();
-        transportLayer.findByIds(clazz.getSimpleName(), Arrays.asList(id), new ICallBack() {
-            @Override
-            public void onResponse(Response response) {
-                toReturn.addAll((List<T>) response.getMessage());
-            }
-
-            @Override
-            public void onError(Error error) {
-                //TODO
-            }
-        });
-        return toReturn.get(0);
-    }
-
-    @Override
     public List<T> findByIds(List<ID> ids) {
         logger.debug("find {} by ids, idList size: {}", clazz.getSimpleName(), ids.size());
         final List<T> toReturn = new LinkedList<>();
@@ -79,11 +61,6 @@ public class BaseBusinessLogic<T, ID extends Serializable> implements IBaseBusin
             }
         });
         return toReturn;
-    }
-
-    @Override
-    public void delete(ID id) {
-        this.delete(Arrays.asList(id));
     }
 
     @Override
@@ -103,11 +80,6 @@ public class BaseBusinessLogic<T, ID extends Serializable> implements IBaseBusin
     }
 
     @Override
-    public void save(T entity) {
-        save(Arrays.asList(entity));
-    }
-
-    @Override
     public void save(List<T> entities) {
         logger.debug("save {} in bulk, bulkSize: {}", clazz.getSimpleName(), entities.size());
         transportLayer.saveEntities(clazz.getSimpleName(), entities, new ICallBack() {
@@ -121,11 +93,6 @@ public class BaseBusinessLogic<T, ID extends Serializable> implements IBaseBusin
                 //TODO
             }
         });
-    }
-
-    @Override
-    public void update(T entity) {
-        update(Arrays.asList(entity));
     }
 
     @Override

@@ -11,6 +11,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.MediaType;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by kobi on 3/27/14.
@@ -29,16 +31,16 @@ public class FEUser {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public User getById(@Suspended final AsyncResponse asyncResponse, @PathParam("id") final String id) {
+    public List<User> getById(@Suspended final AsyncResponse asyncResponse, @PathParam("id") final String id) {
         logger.debug("get User by id: {}",id);
-        return userLogic.findById(id);
+        return userLogic.findByIds(Arrays.asList(id));
     }
 
     @DELETE
     @Path("/{id}")
     public void deleteById(@Suspended final AsyncResponse asyncResponse, @PathParam("id") final String id) {
         logger.debug("delete User by id: {}",id);
-        userLogic.delete(id);
+        userLogic.delete(Arrays.asList(id));
     }
 
     @POST
@@ -46,7 +48,7 @@ public class FEUser {
     @Produces(MediaType.APPLICATION_JSON)
     public void save(@Suspended final AsyncResponse asyncResponse, final User user) {
         logger.debug("save User: {}", user);
-        userLogic.save(user);
+        userLogic.save(Arrays.asList(user));
     }
 
     @PUT
@@ -54,6 +56,6 @@ public class FEUser {
     @Consumes(MediaType.APPLICATION_JSON)
     public void update(@Suspended final AsyncResponse asyncResponse, @PathParam("id") final String id, final User user) {
         logger.debug("update User: {}", user);
-        userLogic.update(user);
+        userLogic.update(Arrays.asList(user));
     }
 }

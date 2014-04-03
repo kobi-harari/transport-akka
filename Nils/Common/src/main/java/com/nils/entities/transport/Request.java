@@ -8,10 +8,10 @@ import java.io.Serializable;
 public class Request implements Serializable {
     final MetaData metaData;
     final String service;
-    final String action;
+    final Action action;
     final Serializable message;
 
-    public Request(MetaData metaData, String service, String action, Serializable message) {
+    public Request(MetaData metaData, String service, Action action, Serializable message) {
         this.metaData = metaData;
         this.service = service;
         this.action = action;
@@ -26,11 +26,15 @@ public class Request implements Serializable {
         return service;
     }
 
-    public String getAction() {
+    public Action getAction() {
         return action;
     }
 
     public Serializable getMessage() {
         return message;
+    }
+
+    static public enum Action {
+        GET, SAVE, DELETE, UPDATE;
     }
 }

@@ -16,18 +16,8 @@ public class BEBaseBusinessLogic<T,ID extends Serializable> implements IBaseBusi
     }
 
     @Override
-    public Object findById(Serializable serializable) {
-        return null;
-    }
-
-    @Override
     public List findByIds(List list) {
         return null;
-    }
-
-    @Override
-    public void delete(Serializable serializable) {
-
     }
 
     @Override
@@ -36,17 +26,7 @@ public class BEBaseBusinessLogic<T,ID extends Serializable> implements IBaseBusi
     }
 
     @Override
-    public void save(Object entity) {
-
-    }
-
-    @Override
     public void save(List entities) {
-
-    }
-
-    @Override
-    public void update(Object entity) {
 
     }
 
