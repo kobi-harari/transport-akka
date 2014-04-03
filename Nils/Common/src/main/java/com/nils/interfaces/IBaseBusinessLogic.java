@@ -10,7 +10,7 @@ public interface IBaseBusinessLogic<T,ID extends Serializable> {
 
     boolean exists(List<String> ids);
 
-    List<T> findByIds(List<ID> ids);
+    List<T> find(List<ID> ids);
 
     void delete(List<ID> ids);
 

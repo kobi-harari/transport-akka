@@ -2,9 +2,13 @@ package com.akka.logic.actors;
 
 import akka.actor.UntypedActor;
 import com.akka.interfaces.IBEUserBusinessLogic;
+import com.google.inject.Inject;
+import com.nils.entities.User;
 import com.nils.entities.transport.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 
 /**
@@ -12,6 +16,7 @@ import org.slf4j.LoggerFactory;
  */
 public class UserActor extends UntypedActor {
 
+    @Inject
     IBEUserBusinessLogic userLogic;
 
     private static final Logger logger = LoggerFactory.getLogger(UserActor.class);
@@ -21,26 +26,25 @@ public class UserActor extends UntypedActor {
 
         if (message instanceof Request) {
             Request request = (Request) message;
-            logger.debug("received message!", request);
-            switch (request.getAction()){
+            logger.debug("received message! Action: {}", request.getAction());
+            switch (request.getAction()) {
                 case GET:
-                    logger.debug("save");
-//                    userLogic.sa
+                    userLogic.find((List<String>) request.getMessage());
                     break;
                 case DELETE:
-                    logger.debug("delete");
+                    userLogic.delete((List<String>) request.getMessage());
                     break;
                 case SAVE:
-                    logger.debug("save");
+                    userLogic.save((List<User>) request.getMessage());
                     break;
                 case UPDATE:
-                    logger.debug("update");
+                    userLogic.update((List<User>) request.getMessage());
                     break;
                 default:
                     logger.error("non valid action");
             }
-            getSender().tell("done!",getSelf());
-        } else{
+            getSender().tell("done!", getSelf());
+        } else {
             logger.error("unhandled message");
             unhandled(message);
         }

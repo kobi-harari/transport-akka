@@ -1,9 +1,9 @@
 package com.transport.service;
 
+import com.google.inject.Inject;
 import com.nils.entities.User;
 import com.transport.logic.user.IUserBusinessLogic;
 import com.transport.logic.user.UserBusinessLogic;
-import com.transport.utils.MmRandom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +22,8 @@ public class FEUser {
 
     private static final Logger logger = LoggerFactory.getLogger(FEUser.class);
 
-    IUserBusinessLogic userLogic = new UserBusinessLogic(); //TODO IoC
+    @Inject
+    IUserBusinessLogic userLogic;
 
     public FEUser() {
         System.out.println("This is not Nils Holgerson but we are going to talk to Akka about it");
@@ -33,7 +34,7 @@ public class FEUser {
     @Produces(MediaType.APPLICATION_JSON)
     public List<User> getById(@Suspended final AsyncResponse asyncResponse, @PathParam("id") final String id) {
         logger.debug("get User by id: {}",id);
-        return userLogic.findByIds(Arrays.asList(id));
+        return userLogic.find(Arrays.asList(id));
     }
 
     @DELETE

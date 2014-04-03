@@ -1,6 +1,8 @@
 package com.akka.system;
 
+import com.akka.impl.BEUserBusinessLogic;
 import com.akka.impl.SMSSendService;
+import com.akka.interfaces.IBEUserBusinessLogic;
 import com.akka.interfaces.ISendMessage;
 import com.google.inject.Binder;
 import com.google.inject.Module;
@@ -12,5 +14,6 @@ public class SystemModule implements Module {
     @Override
     public void configure(Binder binder) {
           binder.bind(ISendMessage.class).to(SMSSendService.class);
+          binder.bind(IBEUserBusinessLogic.class).to(BEUserBusinessLogic.class);
     }
 }

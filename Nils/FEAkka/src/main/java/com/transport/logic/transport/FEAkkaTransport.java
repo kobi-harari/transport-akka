@@ -6,9 +6,9 @@ import java.util.List;
 /**
  * Created by uri.silberstein on 4/3/14.
  */
-public class AkkaTransport<T, ID extends Serializable> implements ITransportLayer<T, ID>{
+public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLayer<T, ID>{
 
-    public AkkaTransport() {
+    public FEAkkaTransport() {
         //bring up ActorSystem
     }
 

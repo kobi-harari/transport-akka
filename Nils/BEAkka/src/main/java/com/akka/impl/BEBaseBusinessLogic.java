@@ -16,7 +16,7 @@ public class BEBaseBusinessLogic<T,ID extends Serializable> implements IBaseBusi
     }
 
     @Override
-    public List findByIds(List list) {
+    public List find(List list) {
         return null;
     }
 

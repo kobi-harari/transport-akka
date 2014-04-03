@@ -2,28 +2,27 @@ package com.transport.logic.base;
 
 import com.nils.entities.transport.Response;
 import com.nils.interfaces.IBaseBusinessLogic;
-import com.transport.logic.transport.AkkaTransport;
+import com.transport.logic.transport.FEAkkaTransport;
 import com.transport.logic.transport.ICallBack;
 import com.transport.logic.transport.ITransportLayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Created by uri.silberstein on 4/2/14.
  */
-public class BaseBusinessLogic<T, ID extends Serializable> implements IBaseBusinessLogic<T, ID> {
+public class FEBusinessLogic<T, ID extends Serializable> implements IBaseBusinessLogic<T, ID> {
 
-    private static final Logger logger = LoggerFactory.getLogger(BaseBusinessLogic.class);
+    private static final Logger logger = LoggerFactory.getLogger(FEBusinessLogic.class);
 
-    ITransportLayer transportLayer = new AkkaTransport(); //TODO use IoC
+    ITransportLayer transportLayer = new FEAkkaTransport(); //TODO use IoC
     Class clazz;
 
-    public BaseBusinessLogic(Class clazz) {
+    public FEBusinessLogic(Class clazz) {
         this.clazz = clazz;
     }
 
@@ -46,7 +45,7 @@ public class BaseBusinessLogic<T, ID extends Serializable> implements IBaseBusin
     }
 
     @Override
-    public List<T> findByIds(List<ID> ids) {
+    public List<T> find(List<ID> ids) {
         logger.debug("find {} by ids, idList size: {}", clazz.getSimpleName(), ids.size());
         final List<T> toReturn = new LinkedList<>();
         transportLayer.findByIds(clazz.getSimpleName(), ids, new ICallBack() {
