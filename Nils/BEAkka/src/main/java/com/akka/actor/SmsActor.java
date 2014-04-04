@@ -1,15 +1,19 @@
 package com.akka.actor;
 
 import akka.actor.UntypedActor;
+import com.akka.entity.SendMessageAttributes;
 import com.akka.interfaces.ISendMessage;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by kobi on 4/3/14.
  */
 public class SmsActor extends UntypedActor {
-    @Inject
+    private static final Logger logger = LoggerFactory.getLogger(SmsActor.class);
+
     private ISendMessage sendMessageService;
 
     public SmsActor(Injector injector) {
@@ -18,8 +22,12 @@ public class SmsActor extends UntypedActor {
 
     @Override
     public void onReceive(Object o) throws Exception {
-        // check the messag and send sms
-        String [] recipients  = {"0502055999"};
-        sendMessageService.sendMessage("This is a message from akka acptor", "a message from akka",recipients);
+        logger.debug("SmsActor was called to send a message");
+        if (o instanceof SendMessageAttributes){
+            SendMessageAttributes messageAttributes = (SendMessageAttributes)o;
+            sendMessageService.sendMessage(messageAttributes.getSubject(), messageAttributes.getMessage(),
+                    messageAttributes.getRecipients());
+            logger.debug("message with subject {} was sent to {}", messageAttributes.getSubject(),messageAttributes.getRecipients());
+        }
     }
 }

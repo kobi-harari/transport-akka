@@ -14,5 +14,6 @@ dependencies {
     compile 'com.typesafe.akka:akka-actor_2.10:2.3.0'
     compile 'ch.qos.logback:logback-classic:1.1.1'
     compile 'com.google.inject:guice:3.0'
+    compile 'com.couchbase.client:couchbase-client:1.3.2'
     compile project(':Common')
 }

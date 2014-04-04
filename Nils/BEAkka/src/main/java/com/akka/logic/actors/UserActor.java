@@ -1,8 +1,11 @@
 package com.akka.logic.actors;
 
+import akka.actor.ActorRef;
+import akka.actor.Props;
 import akka.actor.UntypedActor;
+import com.akka.entity.SendMessageAttributes;
 import com.akka.interfaces.IBEUserBusinessLogic;
-import com.google.inject.Inject;
+import com.akka.system.IocInitializer;
 import com.google.inject.Injector;
 import com.nils.entities.User;
 import com.nils.entities.transport.Request;
@@ -15,6 +18,7 @@ import java.util.List;
 
 
 /**
+ * User actor for user crud operations
  * Created by uri.silberstein on 4/3/14.
  */
 public class UserActor extends UntypedActor {
@@ -27,8 +31,9 @@ public class UserActor extends UntypedActor {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void onReceive(Object message) throws Exception {
-
+        // todo - if the action is not crud send the message to the BL for generalization
         if (message instanceof Request) {
             Request request = (Request) message;
             Response response = new Response(request.getMetaData(),request.getService(),request.getAction());
@@ -43,6 +48,8 @@ public class UserActor extends UntypedActor {
                     break;
                 case SAVE:
                     userLogic.save((List<User>) request.getMessage());
+                    ActorRef smsActor = getContext().actorOf(Props.create(UserActor.class, IocInitializer.getInstance().getInjector()), "smsActor");
+                    smsActor.tell(new SendMessageAttributes(new String[]{"972502055999"}, "this is a save demo", "this is a body demo"),getSelf());
                     break;
                 case UPDATE:
                     userLogic.update((List<User>) request.getMessage());
