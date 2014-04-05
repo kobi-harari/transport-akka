@@ -31,6 +31,11 @@ public class BEBaseBusinessLogic<T,ID extends Serializable> implements IBaseBusi
     }
 
     @Override
+    public boolean exists(List<ID> ids) {
+        return false;
+    }
+
+    @Override
     public List<T> find(List<ID> ids) {
         logger.debug("find in base in business logic");
         return dbOperations.find(ids);
