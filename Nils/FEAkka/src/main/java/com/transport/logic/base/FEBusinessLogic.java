@@ -1,6 +1,7 @@
 package com.transport.logic.base;
 
 import com.nils.entities.transport.Response;
+import com.nils.entities.transport.Error;
 import com.nils.interfaces.IBaseBusinessLogic;
 import com.transport.logic.transport.FEAkkaTransport;
 import com.transport.logic.transport.ICallBack;

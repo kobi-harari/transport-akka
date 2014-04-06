@@ -26,16 +26,11 @@ import scala.concurrent.duration.Duration;
 public class FEAkkaTransportTest {
 
     static ActorSystem system;
-    static ActorRef msgSender;
-    static ActorRef greetingActor;
 
     @BeforeClass
     static public void setUp() throws IOException {
         Logger logger = LoggerFactory.getLogger(FEAkkaTransportTest.class);
-        ActorSystem system = ActorSystem.create("test-system", ConfigFactory.load().getConfig("test-config"));
-
-//        msgSender = system.actorOf(Props.create(MsgSenderActor.class), "MsgSenderActor");
-//        greetingActor = system.actorOf(Props.create(GreetingActor.class), "GreetingActor");
+        ITransportLayer transportLayer = new FEAkkaTransport();
     }
 
     @AfterClass
@@ -44,10 +39,7 @@ public class FEAkkaTransportTest {
 
     @Test
     public void testSimpleFlow() throws Exception {
-        Timeout timeout = new Timeout(Duration.create(5, TimeUnit.DAYS.SECONDS));
-        Future<Object> future = Patterns.ask(greetingActor, "Hi", timeout);
-        String result = (String) Await.result(future, timeout.duration());
-        System.out.println(result);
+        System.out.println("aaa");
 
     }
 

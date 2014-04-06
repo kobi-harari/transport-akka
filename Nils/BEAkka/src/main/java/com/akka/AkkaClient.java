@@ -20,14 +20,7 @@ public class AkkaClient {
     public AkkaClient() {
         Logger log = LoggerFactory.getLogger(AkkaClient.class);
         ActorSystem system = ActorSystem.create("beactorsystem", ConfigFactory.load().getConfig("beconfig"));
-        system.actorOf(Props.create(BEMasterActor.class), "BeMasterActor");
+        system.actorOf(Props.create(BEMasterActor.class), "BEMasterActor");
         log.info("-=-=-=-=-=  Back End Server  IS READY =-=-=-=-=-=- ");
-        system = ActorSystem.create("beactorsystem", ConfigFactory.load().getConfig("beconfig"));
-
-        ActorRef smsActor = system.actorOf(Props.create(SmsActor.class, IocInitializer.getInstance().getInjector()), "SmsActor");
-        ActorRef userActor = system.actorOf(Props.create(UserActor.class, IocInitializer.getInstance().getInjector()), "UserActor");
-        ActorRef beMasterActor = system.actorOf(Props.create(BEMasterActor.class), "BeMasterActor");
-
-        log.info("be actor is waiting and is running:: " + smsActor.toString());
     }
 }
