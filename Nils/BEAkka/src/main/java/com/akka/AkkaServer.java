@@ -1,9 +1,9 @@
 package com.akka;
 
-import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 import com.akka.actor.BEMasterActor;
+import com.akka.actor.logic.MockMasterActor;
 import com.typesafe.config.ConfigFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +17,8 @@ public class AkkaServer {
     public AkkaServer() {
         Logger log = LoggerFactory.getLogger(AkkaServer.class);
         ActorSystem system = ActorSystem.create("beactorsystem", ConfigFactory.load().getConfig("beconfig"));
-        ActorRef beMasterActor = system.actorOf(Props.create(BEMasterActor.class), "BEMasterActor");
+        system.actorOf(Props.create(BEMasterActor.class), "BEMasterActor");
+        system.actorOf(Props.create(MockMasterActor.class), "MockMasterActor");
         log.info("-=-=-=-=-=  Back End Server  IS READY =-=-=-=-=-=- ");
     }
 }

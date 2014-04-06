@@ -31,6 +31,7 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
     ActorSystem system;
     ActorRef feMasterActor;
     ActorRef beMasterActor;
+    ActorRef mockMasterActor;
 
     public FEAkkaTransport() {
         logger.info("Starting FEActorSystem");
@@ -50,15 +51,23 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
 //            e.printStackTrace();
 //        }
 
-        String remotePath = "akka.tcp://beactorsystem@127.0.0.1:2554/user/BEMasterActor";
-        ActorSelection actorSelection1 = system.actorSelection(remotePath);
-        Timeout timeout = new Timeout(Duration.create(30, TimeUnit.SECONDS));
-        Future<ActorRef> actorLocalRefFuture = actorSelection1.resolveOne(timeout);
+//        String remotePath = "akka.tcp://beactorsystem@127.0.0.1:2554/user/BEMasterActor";
+//        ActorSelection actorSelection1 = system.actorSelection(remotePath);
+//        Timeout timeout = new Timeout(Duration.create(30, TimeUnit.SECONDS));
+//        Future<ActorRef> actorLocalRefFuture = actorSelection1.resolveOne(timeout);
+//        try {
+//            beMasterActor = Await.result(actorLocalRefFuture, Duration.create(5, TimeUnit.SECONDS));
+//            Request request = new Request(null, "User", Request.Action.GET, (Serializable) Arrays.asList("1"));
+//            Future<Object> futureGet = Patterns.ask(beMasterActor, request, timeout);
+//            Response response = (Response) Await.result(futureGet, timeout.duration());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+
+        ActorSelection actorSelection = system.actorSelection("akka.tcp://beactorsystem@127.0.0.1:2554/user/MockMasterActor");
+        Future<ActorRef> mockActorRefFuture = actorSelection.resolveOne(new Timeout(Duration.create(30, TimeUnit.SECONDS)));
         try {
-            beMasterActor = Await.result(actorLocalRefFuture, Duration.create(5, TimeUnit.SECONDS));
-            Request request = new Request(null, "User", Request.Action.GET, (Serializable) Arrays.asList("1"));
-            Future<Object> futureGet = Patterns.ask(beMasterActor, request, timeout);
-            Response response = (Response) Await.result(futureGet, timeout.duration());
+            mockMasterActor = Await.result(mockActorRefFuture, Duration.create(5, TimeUnit.SECONDS));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -79,10 +88,9 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
         logger.info("ids: {}", sb.toString());
 
         Request request = new Request(null, entityType, Request.Action.GET, (Serializable) ids);
-        Timeout timeout = new Timeout(Duration.create(15, TimeUnit.SECONDS));
-        Future<Object> future = Patterns.ask(feMasterActor, request, timeout);
+        Future<Object> future = Patterns.ask(mockMasterActor, request, new Timeout(Duration.create(15, TimeUnit.SECONDS)));
         try {
-            Object result = Await.result(future, timeout.duration());
+            Object result = Await.result(future, Duration.create(15, TimeUnit.SECONDS));
             if (result instanceof Response) {
                 callBack.onResponse((Response) result);
             } else {

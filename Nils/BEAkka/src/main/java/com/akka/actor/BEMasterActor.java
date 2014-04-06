@@ -7,6 +7,7 @@ import com.akka.actor.logic.UserActor;
 import com.akka.system.IocInitializer;
 import com.nils.entities.transport.Error;
 import com.nils.entities.transport.Request;
+import com.nils.entities.transport.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,11 +29,16 @@ public class BEMasterActor extends UntypedActor {
         logger.info("BEMasterActor got message! {}", message);
         if (message instanceof Request) {
             if (((Request) message).getAction() != null) {
-                userActor.tell(message, getSelf());
+                userActor.forward(message,getContext());
             } else {
                 logger.error("what is the action? we do not know what to do. Notify my sender about it.");
                 userActor.tell(new Error(123, "there is no action I don't know what to do", null), getSender());
             }
         }
+
+        if (message instanceof Response) {
+
+        }
+
     }
 }
