@@ -1,9 +1,8 @@
-package com.akka.actor;
+package com.akka.actor.helpers;
 
 import akka.actor.UntypedActor;
 import com.akka.entity.SendMessageAttributes;
 import com.akka.interfaces.ISendMessage;
-import com.google.inject.Inject;
 import com.google.inject.Injector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,4 +1,4 @@
-package com.akka.logic.actors;
+package com.akka.actor.logic;
 
 import akka.actor.ActorRef;
 import akka.actor.Props;

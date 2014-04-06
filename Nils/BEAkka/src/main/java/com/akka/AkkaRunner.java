@@ -16,8 +16,7 @@ public class AkkaRunner {
         List<Module> moduleList = new ArrayList<Module>(1);
         moduleList.add(new SystemModule());
         IocInitializer.getInstance().setModules(moduleList);
-        new AkkaClient();
-        System.out.println("Started World Application - waiting for message");
+        new AkkaServer();
     }
 
 }

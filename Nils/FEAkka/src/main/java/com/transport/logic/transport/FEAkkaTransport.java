@@ -37,41 +37,28 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
         system = ActorSystem.create("feactorsystem", ConfigFactory.load().getConfig("feconfig"));
         feMasterActor = system.actorOf(Props.create(FEMasterActor.class), "FEMasterActor");
 
-        Timeout timeout1 = new Timeout(Duration.create(5, "seconds"));
-        Future<Object> future = Patterns.ask(feMasterActor, "hi", timeout1);
+//        Timeout timeout1 = new Timeout(Duration.create(5, "seconds"));
+//        Future<Object> future = Patterns.ask(feMasterActor, "hi", timeout1);
+//
+//        // this blocks current running thread
+//        try {
+//            Awaitable<Object> ready = Await.ready(future, timeout1.duration());
+//
+//            String result = (String) Await.result(future, timeout1.duration());
+//            System.out.println(result);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
-        // this blocks current running thread
+        String remotePath = "akka.tcp://beactorsystem@127.0.0.1:2554/user/BEMasterActor";
+        ActorSelection actorSelection1 = system.actorSelection(remotePath);
+        Timeout timeout = new Timeout(Duration.create(30, TimeUnit.SECONDS));
+        Future<ActorRef> actorLocalRefFuture = actorSelection1.resolveOne(timeout);
         try {
-            Awaitable<Object> ready = Await.ready(future, timeout1.duration());
-
-            String result = (String) Await.result(future, timeout1.duration());
-            System.out.println(result);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-//        ActorSelection actorSelection = system.actorSelection("akka://beactorsystem/user/BEMasterActor");
-        ActorRef actorRef = system.actorFor("akka://beactorsystem@127.0.0.1:2554/user/BEMasterActor");
-        Request refResuest = new Request(null,"User", Request.Action.GET, (Serializable)Arrays.asList("1"));
-        Future<Object> futureRef = Patterns.ask(actorRef, refResuest, timeout1);
-        try {
-            Response response = (Response)Await.result(futureRef, timeout1.duration());
-            System.out.println("aaa");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-        ActorSelection actorSelection = system.actorSelection("akka://beactorsystem@localhost:2554/user/BEMasterActor");
-        Timeout timeout = new Timeout(Duration.create(5, TimeUnit.SECONDS));
-        Future<ActorRef> actorRefFuture = actorSelection.resolveOne(timeout);
-        boolean res = actorRefFuture.isCompleted();
-        try {
-            beMasterActor = Await.result(actorRefFuture, Duration.create(5, TimeUnit.SECONDS));
-            Request request = new Request(null,"User", Request.Action.GET, (Serializable)Arrays.asList("1"));
-            Future<Object> futureGet = Patterns.ask(beMasterActor, request, timeout1);
-            Response response = (Response)Await.result(futureGet, timeout1.duration());
-
+            beMasterActor = Await.result(actorLocalRefFuture, Duration.create(5, TimeUnit.SECONDS));
+            Request request = new Request(null, "User", Request.Action.GET, (Serializable) Arrays.asList("1"));
+            Future<Object> futureGet = Patterns.ask(beMasterActor, request, timeout);
+            Response response = (Response) Await.result(futureGet, timeout.duration());
         } catch (Exception e) {
             e.printStackTrace();
         }

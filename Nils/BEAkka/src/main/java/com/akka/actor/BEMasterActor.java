@@ -1,8 +1,9 @@
-package com.akka.logic.actors;
+package com.akka.actor;
 
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
+import com.akka.actor.logic.UserActor;
 import com.akka.system.IocInitializer;
 import com.nils.entities.transport.Error;
 import com.nils.entities.transport.Request;
