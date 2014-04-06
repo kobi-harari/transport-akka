@@ -34,8 +34,8 @@ public class FEAkkaTransportTest {
         Logger logger = LoggerFactory.getLogger(FEAkkaTransportTest.class);
         ActorSystem system = ActorSystem.create("test-system", ConfigFactory.load().getConfig("test-config"));
 
-        msgSender = system.actorOf(Props.create(MsgSenderActor.class), "MsgSenderActor");
-        greetingActor = system.actorOf(Props.create(GreetingActor.class), "GreetingActor");
+//        msgSender = system.actorOf(Props.create(MsgSenderActor.class), "MsgSenderActor");
+//        greetingActor = system.actorOf(Props.create(GreetingActor.class), "GreetingActor");
     }
 
     @AfterClass

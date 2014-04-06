@@ -12,11 +12,11 @@ import java.util.List;
  */
 public class DbTemplate implements DbOperations {
 
-    private final CouchbaseClient client;
+    private final CouchbaseClient client = null;
 
     @Inject
-    public DbTemplate(CouchbaseClient client) {
-        this.client = client;
+    public DbTemplate() {
+//        this.client = client;
     }
 
     @Override
