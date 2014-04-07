@@ -29,16 +29,11 @@ public class BEMasterActor extends UntypedActor {
         logger.info("BEMasterActor got message! {}", message);
         if (message instanceof Request) {
             if (((Request) message).getAction() != null) {
-                userActor.forward(message,getContext());
+                userActor.forward(message, getContext());
             } else {
                 logger.error("what is the action? we do not know what to do. Notify my sender about it.");
                 userActor.tell(new Error(123, "there is no action I don't know what to do", null), getSender());
             }
-        }
-
-        if (message instanceof Response) {
-
-        }
-
+        } 
     }
 }

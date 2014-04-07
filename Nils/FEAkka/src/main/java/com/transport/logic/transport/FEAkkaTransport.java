@@ -4,6 +4,8 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
+import akka.dispatch.OnComplete;
+import akka.dispatch.OnSuccess;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
 import com.nils.entities.transport.*;
@@ -21,6 +23,7 @@ import scala.concurrent.duration.FiniteDuration;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -51,18 +54,18 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
 //            e.printStackTrace();
 //        }
 
-//        String remotePath = "akka.tcp://beactorsystem@127.0.0.1:2554/user/BEMasterActor";
-//        ActorSelection actorSelection1 = system.actorSelection(remotePath);
-//        Timeout timeout = new Timeout(Duration.create(30, TimeUnit.SECONDS));
-//        Future<ActorRef> actorLocalRefFuture = actorSelection1.resolveOne(timeout);
-//        try {
-//            beMasterActor = Await.result(actorLocalRefFuture, Duration.create(5, TimeUnit.SECONDS));
-//            Request request = new Request(null, "User", Request.Action.GET, (Serializable) Arrays.asList("1"));
-//            Future<Object> futureGet = Patterns.ask(beMasterActor, request, timeout);
-//            Response response = (Response) Await.result(futureGet, timeout.duration());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        String remotePath = "akka.tcp://beactorsystem@127.0.0.1:2554/user/BEMasterActor";
+        ActorSelection actorSelection1 = system.actorSelection(remotePath);
+        Timeout timeout = new Timeout(Duration.create(30, TimeUnit.SECONDS));
+        Future<ActorRef> actorLocalRefFuture = actorSelection1.resolveOne(timeout);
+        try {
+            beMasterActor = Await.result(actorLocalRefFuture, Duration.create(5, TimeUnit.SECONDS));
+            Request request = new Request(null, "User", Request.Action.GET, (Serializable) Arrays.asList("1"));
+            Future<Object> futureGet = Patterns.ask(beMasterActor, request, timeout);
+            Response response = (Response) Await.result(futureGet, timeout.duration());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         ActorSelection actorSelection = system.actorSelection("akka.tcp://beactorsystem@127.0.0.1:2554/user/MockMasterActor");
         Future<ActorRef> mockActorRefFuture = actorSelection.resolveOne(new Timeout(Duration.create(30, TimeUnit.SECONDS)));
@@ -89,6 +92,18 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
 
         Request request = new Request(null, entityType, Request.Action.GET, (Serializable) ids);
         Future<Object> future = Patterns.ask(mockMasterActor, request, new Timeout(Duration.create(15, TimeUnit.SECONDS)));
+
+        try {
+            new OnSuccess<Object>() {
+                @Override
+                public void onSuccess(Object o) throws Throwable {
+                    System.out.println("bla");
+                }
+            }.onSuccess(future);
+        } catch (Throwable t) {
+
+        }
+
         try {
             Object result = Await.result(future, Duration.create(15, TimeUnit.SECONDS));
             if (result instanceof Response) {
