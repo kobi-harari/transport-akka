@@ -93,49 +93,15 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
 
         Request request = new Request(null, entityType, Request.Action.GET, (Serializable) ids);
         Future<Object> future = Patterns.ask(mockMasterActor, request, new Timeout(Duration.create(15, TimeUnit.SECONDS)));
-
-        try {
-            new OnSuccess<Object>() {
-                @Override
-                public void onSuccess(Object o) throws Throwable {
-                    System.out.println("bla");
-                }
-            }.onSuccess(future);
-        } catch (Throwable t) {
-
-        }
         final ExecutionContext ec = system.dispatcher();
-
         future.onSuccess(new OnSuccess<Object>() {
             public void onSuccess(Object result) {
-//                if ("bar" == result) {
-//                    //Do something if it resulted in "bar"
-//                } else {
-//                    //Do something if it was some other String
-//                }
-//                callBack.onResponse(result);
-
                 if(result instanceof Response){
                     System.out.println("aaa");
                     callBack.onResponse((Response)result);
                 }
             }
         }, ec);
-
-//        try {
-//            Object result = Await.result(future, Duration.create(15, TimeUnit.SECONDS));
-//            if (result instanceof Response) {
-//                callBack.onResponse((Response) result);
-//            } else {
-//                if (result instanceof Error) {
-//                    callBack.onError((Error) result);
-//                } else {
-//                    logger.error("Result is not a Response nor Error, result: {}", result);
-//                }
-//            }
-//        } catch (Exception e) {
-//            logger.error("Error in receiving Message", e);
-//        }
     }
 
     @Override
