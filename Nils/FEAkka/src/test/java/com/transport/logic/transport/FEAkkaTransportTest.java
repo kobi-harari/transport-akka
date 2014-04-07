@@ -1,7 +1,7 @@
 package com.transport.logic.transport;
 
 import akka.actor.*;
-import akka.testkit.TestActorRef;
+//import akka.testkit.TestActorRef;
 import akka.util.Timeout;
 import com.nils.entities.transport.*;
 import com.transport.logic.transport.beactors.FEMasterActor;
@@ -73,6 +73,7 @@ public class FEAkkaTransportTest {
         transportLayer.findByIds("User", Arrays.asList("1"), new ICallBack() {
             @Override
             public void onResponse(Response response) {
+                System.out.println(response.getMessage());
                 System.out.println("Success!");
             }
 

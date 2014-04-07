@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.concurrent.Await;
 import scala.concurrent.Awaitable;
+import scala.concurrent.ExecutionContext;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 import scala.concurrent.duration.FiniteDuration;
@@ -82,7 +83,7 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
     }
 
     @Override
-    public void findByIds(String entityType, List<ID> ids, ICallBack callBack) {
+    public void findByIds(String entityType, List<ID> ids, final ICallBack callBack) {
         logger.info("FETransport - findByIds");
         StringBuilder sb = new StringBuilder();
         for (Serializable id : ids) {
@@ -103,21 +104,38 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
         } catch (Throwable t) {
 
         }
+        final ExecutionContext ec = system.dispatcher();
 
-        try {
-            Object result = Await.result(future, Duration.create(15, TimeUnit.SECONDS));
-            if (result instanceof Response) {
-                callBack.onResponse((Response) result);
-            } else {
-                if (result instanceof Error) {
-                    callBack.onError((Error) result);
-                } else {
-                    logger.error("Result is not a Response nor Error, result: {}", result);
+        future.onSuccess(new OnSuccess<Object>() {
+            public void onSuccess(Object result) {
+//                if ("bar" == result) {
+//                    //Do something if it resulted in "bar"
+//                } else {
+//                    //Do something if it was some other String
+//                }
+//                callBack.onResponse(result);
+
+                if(result instanceof Response){
+                    System.out.println("aaa");
+                    callBack.onResponse((Response)result);
                 }
             }
-        } catch (Exception e) {
-            logger.error("Error in receiving Message", e);
-        }
+        }, ec);
+
+//        try {
+//            Object result = Await.result(future, Duration.create(15, TimeUnit.SECONDS));
+//            if (result instanceof Response) {
+//                callBack.onResponse((Response) result);
+//            } else {
+//                if (result instanceof Error) {
+//                    callBack.onError((Error) result);
+//                } else {
+//                    logger.error("Result is not a Response nor Error, result: {}", result);
+//                }
+//            }
+//        } catch (Exception e) {
+//            logger.error("Error in receiving Message", e);
+//        }
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.akka.actor.logic;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
+import com.akka.actor.helpers.SmsActor;
 import com.akka.entity.SendMessageAttributes;
 import com.akka.interfaces.IBEUserBusinessLogic;
 import com.akka.system.IocInitializer;
@@ -48,7 +49,7 @@ public class UserActor extends UntypedActor {
                     break;
                 case SAVE:
                     userLogic.save((List<User>) request.getMessage());
-                    ActorRef smsActor = getContext().actorOf(Props.create(UserActor.class, IocInitializer.getInstance().getInjector()), "smsActor");
+                    ActorRef smsActor = getContext().actorOf(Props.create(SmsActor.class, IocInitializer.getInstance().getInjector()), "smsActor");
                     smsActor.tell(new SendMessageAttributes(new String[]{"972502055999"}, "this is a save demo", "this is a body demo"),getSelf());
                     break;
                 case UPDATE:
@@ -57,7 +58,8 @@ public class UserActor extends UntypedActor {
                 default:
                     logger.error("non valid action");
             }
-            getSender().tell(response, getSelf());
+//            getSender().tell(response, getSelf());
+            getContext().guardian().tell(response, getSelf());
         } else {
             logger.error("unhandled message");
             unhandled(message);

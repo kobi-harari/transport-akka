@@ -17,7 +17,5 @@ public class FEMasterActor extends UntypedActor {
         if(message instanceof String){
             sender().tell("bye",getSender());
         }
-
-
     }
 }
