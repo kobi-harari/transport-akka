@@ -1,18 +1,20 @@
 package com.akka.interfaces;
 
+import com.nils.entities.BaseEntity;
+
 import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by kobi on 4/5/14.
  */
-public interface DbOperations <T,ID extends Serializable>{
+public interface DbOperations <T extends BaseEntity,ID extends Serializable>{
 
     boolean exists(ID id);
 
-    List<T> find(List<ID> ids);
+    <T> List<T> find(List<ID> ids);
 
-    T find(ID id);
+    <T> T find(ID id);
 
     void delete(List<ID> ids);
 
@@ -20,7 +22,7 @@ public interface DbOperations <T,ID extends Serializable>{
 
     void save(List<T> entities);
 
-    void save(T entityy);
+    void save(T entity);
 
     void update(List<T> entities);
 

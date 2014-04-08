@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class BEUserBusinessLogic<User, String> extends BEBaseBusinessLogic implements IBEUserBusinessLogic {
     @Inject
-    public BEUserBusinessLogic(DbOperations dbOperations) {
-        super(dbOperations);
+    public BEUserBusinessLogic(IUserOperation userOperation) {
+        super(userOperation);
     }
 }

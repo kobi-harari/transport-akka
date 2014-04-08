@@ -1,0 +1,2 @@
+db.host=ec2-54-200-236-158.us-west-2.compute.amazonaws.com
+db.port=8091
