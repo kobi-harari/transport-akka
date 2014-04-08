@@ -24,7 +24,7 @@ public class SmsActor extends UntypedActor {
         logger.debug("SmsActor was called to send a message");
         if (o instanceof SendMessageAttributes){
             SendMessageAttributes messageAttributes = (SendMessageAttributes)o;
-            sendMessageService.sendMessage(messageAttributes.getSubject(), messageAttributes.getMessage(),
+            sendMessageService.sendMessage(messageAttributes.getMessage(), messageAttributes.getSubject(),
                     messageAttributes.getRecipients());
             logger.debug("message with subject {} was sent to {}", messageAttributes.getSubject(),messageAttributes.getRecipients());
         }

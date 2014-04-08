@@ -202,6 +202,28 @@ public class FEAkkaTransportTest {
         }
     }
 
+    @Test
+    public void sendSmsTest(){
+        Request userRequest = new Request(new MetaData(), "User", Request.Action.GET, (Serializable) Arrays.asList("akka::1"));
+        final String service = "User";
+
+        transportLayer.findByIds(service, Arrays.asList("akka::1"), new ICallBack() {
+            @Override
+            public void onResponse(Response response) {
+                List<User> users = (List<User>) response.getMessage();
+                Assert.assertEquals("Wrong number of users was returned!", 1, users.size());
+                responses.add(response);
+            }
+
+            @Override
+            public void onError(Error error) {
+                Assert.fail("Failed running GET flow");
+            }
+        });
+    }
+
+
+
     /**
      * Pull (Check) the responses list to see that we got response from the TransportLayer, until the timeout is reached
      *

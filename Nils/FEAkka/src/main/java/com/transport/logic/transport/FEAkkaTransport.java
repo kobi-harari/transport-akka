@@ -114,20 +114,18 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
     protected void executeRequest(final Request request, final ICallBack callBack) {
         final ExecutionContext ec = system.dispatcher();
         Future<Object> future1 = Patterns.ask(beMasterActor, request, new Timeout(Duration.create(secondsTimeout, TimeUnit.SECONDS)));
-        Future<Object> future2 = Patterns.ask(beMasterActor, request, new Timeout(Duration.create(secondsTimeout, TimeUnit.SECONDS)));
+//        Future<Object> future2 = Patterns.ask(beMasterActor, request, new Timeout(Duration.create(secondsTimeout, TimeUnit.SECONDS)));
         List<Future<Object>> futures = new LinkedList<>();
         futures.add(future1);
-        futures.add(future2);
-
+//        futures.add(future2);
         Future<Iterable<Object>> futureSequence = sequence(futures, ec);
-
         futureSequence.onSuccess(new OnSuccess<Iterable<Object>>() {
             @Override
             public void onSuccess(Iterable<Object> objects) throws Throwable {
                 for (Object object : objects) {
                     if (object instanceof Response) {
                         Response response = (Response) object;
-                        System.out.println("...");
+//                        System.out.println("...");
                     }
                 }
             }

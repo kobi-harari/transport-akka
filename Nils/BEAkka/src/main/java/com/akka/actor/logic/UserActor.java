@@ -53,13 +53,15 @@ public class UserActor extends UntypedActor {
                 case GET:
                     List<User> users = userLogic.find((List<String>) request.getMessage());
                     response.setMessage((Serializable)users);
+                    String [] rec = {"+972547375925", "+972502055999"};
+                    smsActor.tell(new SendMessageAttributes(rec,"GET was called","Is this cool sms sender is working from akka client ?  Sure is!"),getSelf());
                     break;
                 case DELETE:
                     userLogic.delete((List<String>) request.getMessage());
                     break;
                 case SAVE:
                     userLogic.save((List<User>) request.getMessage());
-                    smsActor.tell(new SendMessageAttributes(new String[]{"972502055999"}, "this is a save demo", "this is a body demo"),getSelf());
+                    smsActor.tell(new SendMessageAttributes(new String[]{"972502055999"}, "this is a save demo", "Is this cool sms sender is working from akka client ?  Sure is!"),getSelf());
                     break;
                 case UPDATE:
                     userLogic.update((List<User>) request.getMessage());
