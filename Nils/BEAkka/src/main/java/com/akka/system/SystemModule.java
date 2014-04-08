@@ -1,23 +1,17 @@
 package com.akka.system;
 
+import com.akka.db.AccountDbTemplate;
 import com.akka.db.GsonTranslator;
 import com.akka.db.UserDbTemplate;
-import com.akka.impl.BEUserBusinessLogic;
-import com.akka.db.DbTemplate;
-import com.akka.impl.IUserOperation;
-import com.akka.impl.SMSSendService;
-import com.akka.impl.SimpleDiscoveryService;
+import com.akka.impl.*;
 import com.akka.interfaces.*;
 import com.couchbase.client.CouchbaseClient;
 import com.google.inject.*;
-import com.nils.entities.BaseEntity;
-import com.nils.entities.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,6 +26,8 @@ public class SystemModule implements Module {
         logger.debug("in configure before injections");
         binder.bind(ISendMessage.class).to(SMSSendService.class);
         binder.bind(IUserOperation.class).to(UserDbTemplate.class);
+        binder.bind(IAccountOperation.class).to(AccountDbTemplate.class);
+        binder.bind(IBEAccountBusinessLogic.class).to(BEAccountBusinessLogic.class);
         binder.bind(IBEUserBusinessLogic.class).to(BEUserBusinessLogic.class);
         binder.bind(IJsonTranslator.class).to(GsonTranslator.class);
     }

@@ -3,6 +3,7 @@ package com.akka.actor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
+import com.akka.actor.logic.AccountActor;
 import com.akka.actor.logic.UserActor;
 import com.akka.system.IocInitializer;
 import com.nils.entities.transport.Error;
@@ -18,10 +19,12 @@ public class BEMasterActor extends UntypedActor {
 
     private static final Logger logger = LoggerFactory.getLogger(BEMasterActor.class);
     private final ActorRef userActor;
+    private final ActorRef accountActor;
 
     public BEMasterActor() {
         logger.info("creating the master dispatcher for this be service");
         userActor = getContext().actorOf(Props.create(UserActor.class, IocInitializer.getInstance().getInjector()), "userActor");
+        accountActor = getContext().actorOf(Props.create(AccountActor.class, IocInitializer.getInstance().getInjector()), "accountActor");
     }
 
     @Override

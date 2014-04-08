@@ -1,4 +1,4 @@
-package com.akka.impl;
+package com.akka.interfaces;
 
 import com.akka.interfaces.DbOperations;
 
