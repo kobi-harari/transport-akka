@@ -1,28 +1,19 @@
 package com.transport.logic.transport;
 
-import akka.actor.*;
-//import akka.testkit.TestActorRef;
-import akka.util.Timeout;
 import com.nils.entities.User;
-import com.nils.entities.transport.*;
-import com.transport.logic.transport.beactors.FEMasterActor;
-import com.typesafe.config.ConfigFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import com.nils.entities.transport.Request;
+import com.nils.entities.transport.Response;
+import com.nils.entities.transport.Error;
+import org.junit.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-
-import scala.concurrent.Await;
-import scala.concurrent.Future;
-
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
+import java.util.LinkedList;
+import java.util.List;
 
-import akka.pattern.Patterns;
-import scala.concurrent.duration.Duration;
+//import akka.testkit.TestActorRef;
 
 
 /**
@@ -30,8 +21,9 @@ import scala.concurrent.duration.Duration;
  */
 public class FEAkkaTransportTest {
 
-    static ActorSystem _system;
     static ITransportLayer transportLayer;
+    private long timeout = 1000*10;
+    final List<Response> responses = new LinkedList<>();
 
     @BeforeClass
     static public void setUp() throws IOException {
@@ -65,48 +57,106 @@ public class FEAkkaTransportTest {
     static public void tearDown() {
     }
 
-    @Test
-    public void testSimpleFlow() throws Exception {
+    @Before
+    public void before() {
+        responses.clear();
+    }
 
-        transportLayer.findByIds("User", Arrays.asList("akka::1"), new ICallBack() {
-            @Override
-            public void onResponse(Response response) {
-                System.out.println(response.getMessage());
-                System.out.println("Success!");
-            }
-
-            @Override
-            public void onError(com.nils.entities.transport.Error error) {
-                System.out.println("Failure!");
-            }
-        });
-
-        try {
-            Thread.sleep(1000 * 15);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
+    @After
+    public void after() {
     }
 
     @Test
-    public void testSaveFlow() throws Exception {
-
-        transportLayer.saveEntities("User", Arrays.asList(new User("akka::1","Kobi",40,"3")), new ICallBack() {
+    public void testSimpleGetFlow() throws Exception {
+        final String service = "User";
+        transportLayer.findByIds(service, Arrays.asList("akka::1"), new ICallBack() {
             @Override
             public void onResponse(Response response) {
-                System.out.println(response.getMessage());
-                System.out.println("Success!");
+                Assert.assertEquals("Wrong service name was returned!", service, response.getService());
+                Assert.assertEquals("Wrong action was returned!", Request.Action.GET, response.getAction());
+                List<User> users = (List<User>) response.getMessage();
+                Assert.assertEquals("Wrong number of users was returned!", 1, users.size());
+                responses.add(response);
             }
 
             @Override
-            public void onError(com.nils.entities.transport.Error error) {
-                System.out.println("Failure!");
+            public void onError(Error error) {
+                Assert.fail("Failed running GET flow");
             }
         });
+        Assert.assertTrue("Failed to get Response!", isResponseWithTimeout(timeout));
+    }
 
+    @Test
+    public void testSimpleSaveFlow() throws Exception {
+        final String service = "User";
+        transportLayer.saveEntities(service, Arrays.asList(new User("akka::1", "Kobi", 40, "3")), new ICallBack() {
+            @Override
+            public void onResponse(Response response) {
+                Assert.assertEquals("Wrong service name was returned!", service, response.getService());
+                Assert.assertEquals("Wrong action was returned!", Request.Action.SAVE, response.getAction());
+                responses.add(response);
+            }
 
+            @Override
+            public void onError(Error error) {
+                Assert.fail("Failed running save flow");
+            }
+        });
+        Assert.assertTrue("Failed to get Response!", isResponseWithTimeout(timeout));
+    }
 
+    @Test
+    public void testDeleteFlow() throws Exception {
+        final String service = "User";
+        transportLayer.deleteEntities(service, Arrays.asList("akka::1"), new ICallBack() {
+            @Override
+            public void onResponse(Response response) {
+                Assert.assertEquals("Wrong service name was returned!", service, response.getService());
+                Assert.assertEquals("Wrong action was returned!", Request.Action.DELETE, response.getAction());
+                responses.add(response);
+            }
+
+            @Override
+            public void onError(Error error) {
+                Assert.fail("Failed running Delete flow");
+            }
+        });
+        Assert.assertTrue("Failed to get Response!", isResponseWithTimeout(timeout));
+    }
+
+    @Test
+    public void testUpdateFlow() throws Exception {
+        final String service = "User";
+        transportLayer.updateEntities(service, Arrays.asList(new User("akka::1", "Kobi", 40, "3")), new ICallBack() {
+            @Override
+            public void onResponse(Response response) {
+                Assert.assertEquals("Wrong service name was returned!", service, response.getService());
+                Assert.assertEquals("Wrong action was returned!", Request.Action.UPDATE, response.getAction());
+                responses.add(response);
+            }
+
+            @Override
+            public void onError(Error error) {
+                Assert.fail("Failed running update flow");
+            }
+        });
+        Assert.assertTrue("Failed to get Response!", isResponseWithTimeout(timeout));
+    }
+
+    /**
+     * Pull (Check) the responses list to see that we got response from the TransportLayer, until the timeout is reached
+     * @param timeoutInMilliseconds
+     * @throws InterruptedException
+     */
+    private boolean isResponseWithTimeout(long timeoutInMilliseconds) throws InterruptedException {
+        long start = System.currentTimeMillis();
+        long current = System.currentTimeMillis();
+        while(responses.isEmpty() && current < start + timeoutInMilliseconds){
+            Thread.sleep(1000);
+            current = System.currentTimeMillis();
+        }
+        return !responses.isEmpty();
     }
 
 

@@ -1,5 +1,6 @@
 package com.transport.logic.base;
 
+import com.google.inject.Inject;
 import com.nils.entities.transport.Response;
 import com.nils.entities.transport.Error;
 import com.nils.interfaces.IBaseBusinessLogic;
@@ -20,7 +21,8 @@ public class FEBusinessLogic<T, ID extends Serializable> implements IBaseBusines
 
     private static final Logger logger = LoggerFactory.getLogger(FEBusinessLogic.class);
 
-    ITransportLayer transportLayer = new FEAkkaTransport(); //TODO use IoC
+    @Inject
+    ITransportLayer transportLayer;
     Class clazz;
 
     public FEBusinessLogic(Class clazz) {

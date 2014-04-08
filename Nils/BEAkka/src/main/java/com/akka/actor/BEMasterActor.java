@@ -32,11 +32,22 @@ public class BEMasterActor extends UntypedActor {
         logger.info("BEMasterActor got message! {}", message);
         if (message instanceof Request) {
             if (((Request) message).getAction() != null) {
-                userActor.forward(message, getContext());
+                switch (((Request) message).getService()) {
+                    case "User":
+                        userActor.forward(message, getContext());
+                        break;
+                    case "Account":
+                        accountActor.forward(message, getContext());
+                        break;
+                    default:
+                        logger.error("This service {} is not available", ((Request) message).getService());
+                        getSender().tell(new Error(Error.SERVICE_NOT_AVAILABLE,
+                                ((Request) message).getService() + " is not available", null),
+                                getSelf());
+                }
             } else {
                 logger.error("what is the action? we do not know what to do. Notify my sender about it.");
-//                userActor.tell(new Error(123, "there is no action I don't know what to do", null), getSender());
-                getSender().tell(new Error(123, "there is no action I don't know what to do", null), getSender());
+                getSender().tell(new Error(Error.ACTION_MISSING, "missing action!", null), getSelf());
             }
         }
     }
