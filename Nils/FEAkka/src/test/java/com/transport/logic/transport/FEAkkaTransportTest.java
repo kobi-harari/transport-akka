@@ -29,7 +29,7 @@ public class FEAkkaTransportTest {
     final List<Response> responses = new LinkedList<>();
 
     @BeforeClass
-    static public void setUp() throws IOException {
+    static public void setUp() throws Exception {
         Logger logger = LoggerFactory.getLogger(FEAkkaTransportTest.class);
         transportLayer = new FEAkkaTransport();
 //        _system = ActorSystem.create("feactorsystem", ConfigFactory.load().getConfig("feconfig"));
@@ -87,7 +87,7 @@ public class FEAkkaTransportTest {
                 Assert.fail("Failed running GET flow");
             }
         });
-        Assert.assertTrue("Failed to get Response!", isResponseWithTimeout(1,timeout));
+        Assert.assertTrue("Failed to get Response!", isResponseWithTimeout(1, timeout));
     }
 
     @Test
@@ -106,7 +106,7 @@ public class FEAkkaTransportTest {
                 Assert.fail("Failed running save flow");
             }
         });
-        Assert.assertTrue("Failed to get Response!", isResponseWithTimeout(1,timeout));
+        Assert.assertTrue("Failed to get Response!", isResponseWithTimeout(1, timeout));
     }
 
     @Test
@@ -125,7 +125,7 @@ public class FEAkkaTransportTest {
                 Assert.fail("Failed running Delete flow");
             }
         });
-        Assert.assertTrue("Failed to get Response!", isResponseWithTimeout(1,timeout));
+        Assert.assertTrue("Failed to get Response!", isResponseWithTimeout(1, timeout));
     }
 
     @Test
@@ -144,7 +144,7 @@ public class FEAkkaTransportTest {
                 Assert.fail("Failed running update flow");
             }
         });
-        Assert.assertTrue("Failed to get Response!", isResponseWithTimeout(1,timeout));
+        Assert.assertTrue("Failed to get Response!", isResponseWithTimeout(1, timeout));
     }
 
     @Test
@@ -163,7 +163,7 @@ public class FEAkkaTransportTest {
                 Assert.fail("Failed running save flow");
             }
         });
-        Assert.assertTrue("Failed to get Response!", isResponseWithTimeout(1,timeout));
+        Assert.assertTrue("Failed to get Response!", isResponseWithTimeout(1, timeout));
     }
 
     @Test
@@ -184,16 +184,22 @@ public class FEAkkaTransportTest {
                 Assert.fail("Failed running save flow");
             }
         });
-        Assert.assertTrue("Failed to get Response!", isResponseWithTimeout(1,timeout));
+        Assert.assertTrue("Failed to get Response!", isResponseWithTimeout(1, timeout));
     }
 
     @Test
     public void testSimpleOrchestration() throws Exception {
-        Request userRequest = new Request(new MetaData(), "User", Request.Action.GET, (Serializable) Arrays.asList("akka::1"));
-        Request accountRequest = new Request(new MetaData(), "Account", Request.Action.GET, (Serializable) Arrays.asList("akka:aacount::1"));
-        transportLayer.orchestrate(Arrays.asList(userRequest, accountRequest), responses);
-        Assert.assertTrue("Failed to get Response!", isResponseWithTimeout(2,timeout));
-        Assert.assertEquals(2, responses.size());
+        for (int i = 0; i < 100; i++) {
+            System.out.println("test #" + i);
+            Request userRequest = new Request(new MetaData(), "User", Request.Action.GET, (Serializable) Arrays.asList("akka::1"));
+            Request accountRequest = new Request(new MetaData(), "Account", Request.Action.GET, (Serializable) Arrays.asList("akka:aacount::1"));
+            transportLayer.orchestrate(Arrays.asList(userRequest, accountRequest), responses);
+            System.out.println("current results cnt " + responses.size());
+//        Assert.assertTrue("Failed to get Response!", isResponseWithTimeout(2,timeout));
+            Assert.assertEquals(2, responses.size());
+            responses.clear();
+//            Thread.sleep(1);
+        }
     }
 
     /**

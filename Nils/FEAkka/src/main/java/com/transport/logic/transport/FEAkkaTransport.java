@@ -31,11 +31,11 @@ import static akka.dispatch.Futures.sequence;
 public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLayer<T, ID> {
 
     private Logger logger = LoggerFactory.getLogger(FEAkkaTransport.class);
-    protected  ActorSystem system;
+    protected ActorSystem system;
     protected ActorRef beMasterActor;
     protected long secondsTimeout = 10;
 
-    public FEAkkaTransport() {
+    public FEAkkaTransport() throws Exception {
         logger.info("Starting FEActorSystem");
         system = ActorSystem.create("feactorsystem", ConfigFactory.load().getConfig("feconfig"));
         String remotePath = "akka.tcp://beactorsystem@127.0.0.1:2554/user/BEMasterActor";
@@ -47,6 +47,7 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
             logger.info("BEMasterActor handle was acquired");
         } catch (Exception e) {
             logger.info("Failed to acquire BEMasterActor handle!!!", e);
+            throw new Exception("Failed to acquire BEMasterActor handle");
         }
     }
 
@@ -86,19 +87,28 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
             futures.add(Patterns.ask(beMasterActor, request, new Timeout(Duration.create(secondsTimeout, TimeUnit.SECONDS))));
         }
         Future<Iterable<Object>> futureSequence = sequence(futures, ec);
+//        futureSequence.onSuccess(new OnSuccess<Iterable<Object>>() {
+//            @Override
+//            public void onSuccess(Iterable<Object> objects) throws Throwable {
+//                for (Object object : objects) {
+//                    if (object instanceof Response) {
+//                        logger.info("got response in orchestrations");
+//                        responses.add((Response) object);
+//                    }
+//                }
+//            }
+//        }, ec);
 
-        final List<Response> toReturn = new LinkedList<>();
-        futureSequence.onSuccess(new OnSuccess<Iterable<Object>>() {
-            @Override
-            public void onSuccess(Iterable<Object> objects) throws Throwable {
-                for (Object object : objects) {
-                    if (object instanceof Response) {
-                        logger.info("got response in orchestrations");
-                        responses.add((Response) object);
-                    }
+        try {
+            Iterable<Object> results = Await.result(futureSequence, Duration.create(secondsTimeout, TimeUnit.SECONDS));
+            for (Object result : results) {
+                if (result instanceof Response) {
+                    responses.add((Response) result);
                 }
             }
-        }, ec);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     protected void executeRequest(final Request request, final ICallBack callBack) {
@@ -114,8 +124,8 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
         futureSequence.onSuccess(new OnSuccess<Iterable<Object>>() {
             @Override
             public void onSuccess(Iterable<Object> objects) throws Throwable {
-                for(Object object : objects){
-                    if(object instanceof Response){
+                for (Object object : objects) {
+                    if (object instanceof Response) {
                         Response response = (Response) object;
                         System.out.println("...");
                     }
@@ -129,11 +139,11 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
         Timeout timeout = new Timeout(Duration.create(secondsTimeout, "seconds"));
         try {
             Object result = Await.result(future, timeout.duration());
-            if(result instanceof Response){
-                callBack.onResponse((Response)result);
+            if (result instanceof Response) {
+                callBack.onResponse((Response) result);
             }
-            if(result instanceof Error){
-                callBack.onError((Error) result); 
+            if (result instanceof Error) {
+                callBack.onError((Error) result);
             }
         } catch (Exception e) {
             e.printStackTrace();
