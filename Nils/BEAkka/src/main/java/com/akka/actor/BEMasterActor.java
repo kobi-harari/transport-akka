@@ -32,8 +32,9 @@ public class BEMasterActor extends UntypedActor {
                 userActor.forward(message, getContext());
             } else {
                 logger.error("what is the action? we do not know what to do. Notify my sender about it.");
-                userActor.tell(new Error(123, "there is no action I don't know what to do", null), getSender());
+//                userActor.tell(new Error(123, "there is no action I don't know what to do", null), getSender());
+                getSender().tell(new Error(123, "there is no action I don't know what to do", null), getSender());
             }
-        } 
+        }
     }
 }

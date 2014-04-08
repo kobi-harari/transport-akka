@@ -4,6 +4,7 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
+import akka.dispatch.OnFailure;
 import akka.dispatch.OnSuccess;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
@@ -29,47 +30,20 @@ import java.util.concurrent.TimeUnit;
 public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLayer<T, ID> {
     Logger logger = LoggerFactory.getLogger(FEAkkaTransport.class);
     ActorSystem system;
-    ActorRef feMasterActor;
     ActorRef beMasterActor;
-    ActorRef mockMasterActor;
 
     public FEAkkaTransport() {
         logger.info("Starting FEActorSystem");
         system = ActorSystem.create("feactorsystem", ConfigFactory.load().getConfig("feconfig"));
-        feMasterActor = system.actorOf(Props.create(FEMasterActor.class), "FEMasterActor");
-
-//        Timeout timeout1 = new Timeout(Duration.create(5, "seconds"));
-//        Future<Object> future = Patterns.ask(feMasterActor, "hi", timeout1);
-//
-//        // this blocks current running thread
-//        try {
-//            Awaitable<Object> ready = Await.ready(future, timeout1.duration());
-//
-//            String result = (String) Await.result(future, timeout1.duration());
-//            System.out.println(result);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
 
         String remotePath = "akka.tcp://beactorsystem@127.0.0.1:2554/user/BEMasterActor";
-        ActorSelection actorSelection1 = system.actorSelection(remotePath);
-        Timeout timeout = new Timeout(Duration.create(30, TimeUnit.SECONDS));
-        Future<ActorRef> actorLocalRefFuture = actorSelection1.resolveOne(timeout);
+        ActorSelection actorSelection = system.actorSelection(remotePath);
+        Future<ActorRef> actorLocalRefFuture = actorSelection.resolveOne(new Timeout(Duration.create(30, TimeUnit.SECONDS)));
         try {
-            beMasterActor = Await.result(actorLocalRefFuture, Duration.create(5, TimeUnit.SECONDS));
-            Request request = new Request(null, "User", Request.Action.GET, (Serializable) Arrays.asList("1"));
-            Future<Object> futureGet = Patterns.ask(beMasterActor, request, timeout);
-            Response response = (Response) Await.result(futureGet, timeout.duration());
+            beMasterActor = Await.result(actorLocalRefFuture, Duration.create(15, TimeUnit.SECONDS));
+            logger.info("BEMaster Actor handle was acquired!");
         } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        ActorSelection actorSelection = system.actorSelection("akka.tcp://beactorsystem@127.0.0.1:2554/user/MockMasterActor");
-        Future<ActorRef> mockActorRefFuture = actorSelection.resolveOne(new Timeout(Duration.create(30, TimeUnit.SECONDS)));
-        try {
-            mockMasterActor = Await.result(mockActorRefFuture, Duration.create(5, TimeUnit.SECONDS));
-        } catch (Exception e) {
-            e.printStackTrace();
+            logger.info("Failed to acquire BEMaster Actor!!!", e);
         }
     }
 
@@ -88,16 +62,29 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
         logger.info("ids: {}", sb.toString());
 
         Request request = new Request(null, entityType, Request.Action.GET, (Serializable) ids);
-        Future<Object> future = Patterns.ask(mockMasterActor, request, new Timeout(Duration.create(15, TimeUnit.SECONDS)));
+        Future<Object> future = Patterns.ask(beMasterActor, request, new Timeout(Duration.create(15, TimeUnit.SECONDS)));
         final ExecutionContext ec = system.dispatcher();
         future.onSuccess(new OnSuccess<Object>() {
             public void onSuccess(Object result) {
-                if(result instanceof Response){
-                    System.out.println("aaa");
-                    callBack.onResponse((Response)result);
+                if (result instanceof Response) {
+                    logger.info("got findByIds result from BE Actor");
+                    callBack.onResponse((Response) result);
                 }
             }
         }, ec);
+
+        future.onFailure(new OnFailure() {
+            @Override
+            public void onFailure(Throwable throwable) throws Throwable {
+                logger.error("Failed to get response", throwable);
+            }
+        }, ec);
+
+        try {
+            Thread.sleep(1000 * 15);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

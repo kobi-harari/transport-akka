@@ -32,6 +32,13 @@ public class UserActor extends UntypedActor {
     }
 
     @Override
+    public void preStart() {
+        // If we don't get any progress within 15 seconds then the service
+        // is unavailable
+//        getContext().setReceiveTimeout(Duration.create("15 seconds"));
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public void onReceive(Object message) throws Exception {
         // todo - if the action is not crud send the message to the BL for generalization
@@ -58,8 +65,7 @@ public class UserActor extends UntypedActor {
                 default:
                     logger.error("non valid action");
             }
-//            getSender().tell(response, getSelf());
-            getContext().guardian().tell(response, getSelf());
+            getSender().tell(response, getSelf());
         } else {
             logger.error("unhandled message");
             unhandled(message);

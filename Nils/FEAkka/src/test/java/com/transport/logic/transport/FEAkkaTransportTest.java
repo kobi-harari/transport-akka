@@ -68,7 +68,6 @@ public class FEAkkaTransportTest {
     public void testSimpleFlow() throws Exception {
 
 //        _system.eventStream().publish("Uri");
-        System.out.println("aaa");
 
         transportLayer.findByIds("User", Arrays.asList("1"), new ICallBack() {
             @Override
