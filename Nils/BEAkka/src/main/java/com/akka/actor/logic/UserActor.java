@@ -26,6 +26,8 @@ public class UserActor extends UntypedActor {
 
     private static final Logger logger = LoggerFactory.getLogger(UserActor.class);
     IBEUserBusinessLogic userLogic;
+    ActorRef smsActor = getContext().actorOf(
+            Props.create(SmsActor.class, IocInitializer.getInstance().getInjector()), "smsActor");
 
     public UserActor(Injector injector) {
         userLogic = injector.getInstance(IBEUserBusinessLogic.class);
@@ -56,7 +58,6 @@ public class UserActor extends UntypedActor {
                     break;
                 case SAVE:
                     userLogic.save((List<User>) request.getMessage());
-                    ActorRef smsActor = getContext().actorOf(Props.create(SmsActor.class, IocInitializer.getInstance().getInjector()), "smsActor");
                     smsActor.tell(new SendMessageAttributes(new String[]{"972502055999"}, "this is a save demo", "this is a body demo"),getSelf());
                     break;
                 case UPDATE:

@@ -44,6 +44,7 @@ public class UserBusinessLogicTest {
     public void testSimpleGetFlow() throws Exception {
         List<User> users = userBusinessLogic.find(Arrays.asList("akka::1"));
         System.out.println("");
+        Assert.assertEquals(1,users.size());
     }
 
 }

@@ -74,12 +74,31 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
 
     private void executeRequest(final Request request, final ICallBack callBack) {
         Future<Object> future = Patterns.ask(beMasterActor, request, new Timeout(Duration.create(secondsTimeout, TimeUnit.SECONDS)));
+        Timeout timeout = new Timeout(Duration.create(5, "seconds"));
+        try {
+            Object result = Await.result(future, timeout.duration());
+            if(result instanceof Response){
+                callBack.onResponse((Response)result);
+            }
+            if(result instanceof Error){
+                callBack.onError((Error) result); 
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void executeRequestNonBlocking(final Request request, final ICallBack callBack) {
+        Future<Object> future = Patterns.ask(beMasterActor, request, new Timeout(Duration.create(secondsTimeout, TimeUnit.SECONDS)));
         final ExecutionContext ec = system.dispatcher();
         future.onSuccess(new OnSuccess<Object>() {
             public void onSuccess(Object result) {
                 if (result instanceof Response) {
                     logger.info("Successfully call {} action. ", request.getAction());
                     callBack.onResponse((Response) result);
+                }
+                if (result instanceof Error) {
+                    logger.info("Successfully call {} action. ", request.getAction());
+                    callBack.onError((Error) result);
                 }
             }
         }, ec);

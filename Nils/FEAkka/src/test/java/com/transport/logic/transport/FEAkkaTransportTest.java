@@ -1,5 +1,6 @@
 package com.transport.logic.transport;
 
+import com.nils.entities.Account;
 import com.nils.entities.User;
 import com.nils.entities.transport.Request;
 import com.nils.entities.transport.Response;
@@ -22,7 +23,7 @@ import java.util.List;
 public class FEAkkaTransportTest {
 
     static ITransportLayer transportLayer;
-    private long timeout = 1000*10;
+    private long timeout = 1000 * 10;
     final List<Response> responses = new LinkedList<>();
 
     @BeforeClass
@@ -144,15 +145,57 @@ public class FEAkkaTransportTest {
         Assert.assertTrue("Failed to get Response!", isResponseWithTimeout(timeout));
     }
 
+    @Test
+    public void testSimpleSaveFlowAccount() throws Exception {
+        final String service = "Account";
+        transportLayer.saveEntities(service, Arrays.asList(new Account("akka::aacount::1", "Kobi account")), new ICallBack() {
+            @Override
+            public void onResponse(Response response) {
+                Assert.assertEquals("Wrong service name was returned!", service, response.getService());
+                Assert.assertEquals("Wrong action was returned!", Request.Action.SAVE, response.getAction());
+                responses.add(response);
+            }
+
+            @Override
+            public void onError(Error error) {
+                Assert.fail("Failed running save flow");
+            }
+        });
+        Assert.assertTrue("Failed to get Response!", isResponseWithTimeout(timeout));
+    }
+
+    @Test
+    public void testSimpleGetFlowAccount() throws Exception {
+        final String service = "Account";
+        transportLayer.findByIds(service, Arrays.asList("akka::aacount::1"), new ICallBack() {
+            @Override
+            public void onResponse(Response response) {
+                Assert.assertEquals("Wrong service name was returned!", service, response.getService());
+                Assert.assertEquals("Wrong action was returned!", Request.Action.GET, response.getAction());
+                List<Account> accounts = (List<Account>) response.getMessage();
+                Assert.assertEquals("Wrong number of accounts", 1, accounts.size());
+                responses.add(response);
+            }
+
+            @Override
+            public void onError(Error error) {
+                Assert.fail("Failed running save flow");
+            }
+        });
+        Assert.assertTrue("Failed to get Response!", isResponseWithTimeout(timeout));
+    }
+
+
     /**
      * Pull (Check) the responses list to see that we got response from the TransportLayer, until the timeout is reached
+     *
      * @param timeoutInMilliseconds
      * @throws InterruptedException
      */
     private boolean isResponseWithTimeout(long timeoutInMilliseconds) throws InterruptedException {
         long start = System.currentTimeMillis();
         long current = System.currentTimeMillis();
-        while(responses.isEmpty() && current < start + timeoutInMilliseconds){
+        while (responses.isEmpty() && current < start + timeoutInMilliseconds) {
             Thread.sleep(1000);
             current = System.currentTimeMillis();
         }

@@ -23,8 +23,10 @@ public class BEMasterActor extends UntypedActor {
 
     public BEMasterActor() {
         logger.info("creating the master dispatcher for this be service");
-        userActor = getContext().actorOf(Props.create(UserActor.class, IocInitializer.getInstance().getInjector()), "userActor");
-        accountActor = getContext().actorOf(Props.create(AccountActor.class, IocInitializer.getInstance().getInjector()), "accountActor");
+        userActor = getContext().actorOf(
+                Props.create(UserActor.class, IocInitializer.getInstance().getInjector()), "userActor");
+        accountActor = getContext().actorOf(
+                Props.create(AccountActor.class, IocInitializer.getInstance().getInjector()), "accountActor");
     }
 
     @Override
