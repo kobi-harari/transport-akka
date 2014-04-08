@@ -36,9 +36,11 @@ public class BEMasterActor extends UntypedActor {
             if (((Request) message).getAction() != null) {
                 switch (((Request) message).getService()) {
                     case "User":
+                        logger.info("BEMasterActor forwarding msg to UserActor, {}", message);
                         userActor.forward(message, getContext());
                         break;
                     case "Account":
+                        logger.info("BEMasterActor forwarding msg to AccountActor, {}", message);
                         accountActor.forward(message, getContext());
                         break;
                     default:

@@ -25,14 +25,18 @@ import java.util.List;
 public class AccountActor extends UntypedActor {
     private static final Logger logger = LoggerFactory.getLogger(AccountActor.class);
     IBEAccountBusinessLogic accountLogic;
-    ActorRef smsActor = getContext().actorOf(
-            Props.create(SmsActor.class, IocInitializer.getInstance().getInjector()), "smsActor");
+    ActorRef smsActor;
 
     public AccountActor(Injector injector) {
         accountLogic = injector.getInstance(IBEAccountBusinessLogic.class);
     }
-    public AccountActor(IBEAccountBusinessLogic accountLogic) {
-        this.accountLogic = accountLogic;
+
+    @Override
+    public void preStart() {
+        // If we don't get any progress within 15 seconds then the service
+        // is unavailable
+        smsActor = getContext().actorOf(
+                Props.create(SmsActor.class, IocInitializer.getInstance().getInjector()), "smsActor");
     }
 
     @Override

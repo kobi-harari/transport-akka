@@ -19,8 +19,11 @@ import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import static akka.dispatch.Futures.sequence;
 
 /**
  * Created by uri.silberstein on 4/3/14.
@@ -28,9 +31,9 @@ import java.util.concurrent.TimeUnit;
 public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLayer<T, ID> {
 
     private Logger logger = LoggerFactory.getLogger(FEAkkaTransport.class);
-    private ActorSystem system;
-    private ActorRef beMasterActor;
-    private long secondsTimeout = 10;
+    protected  ActorSystem system;
+    protected ActorRef beMasterActor;
+    protected long secondsTimeout = 10;
 
     public FEAkkaTransport() {
         logger.info("Starting FEActorSystem");
@@ -72,9 +75,58 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
         executeRequest(new Request(null, entityType, Request.Action.UPDATE, (Serializable) entities), callBack);
     }
 
-    private void executeRequest(final Request request, final ICallBack callBack) {
+    @Override
+    public void orchestrate(List<Request> requests, final List<Response> responses) {
+
+        logger.info("Going to execute orchestration, #requests: {}", requests.size());
+
+        final ExecutionContext ec = system.dispatcher();
+        List<Future<Object>> futures = new LinkedList<>();
+        for (Request request : requests) {
+            futures.add(Patterns.ask(beMasterActor, request, new Timeout(Duration.create(secondsTimeout, TimeUnit.SECONDS))));
+        }
+        Future<Iterable<Object>> futureSequence = sequence(futures, ec);
+
+        final List<Response> toReturn = new LinkedList<>();
+        futureSequence.onSuccess(new OnSuccess<Iterable<Object>>() {
+            @Override
+            public void onSuccess(Iterable<Object> objects) throws Throwable {
+                for (Object object : objects) {
+                    if (object instanceof Response) {
+                        logger.info("got response in orchestrations");
+                        responses.add((Response) object);
+                    }
+                }
+            }
+        }, ec);
+    }
+
+    protected void executeRequest(final Request request, final ICallBack callBack) {
+        final ExecutionContext ec = system.dispatcher();
+        Future<Object> future1 = Patterns.ask(beMasterActor, request, new Timeout(Duration.create(secondsTimeout, TimeUnit.SECONDS)));
+        Future<Object> future2 = Patterns.ask(beMasterActor, request, new Timeout(Duration.create(secondsTimeout, TimeUnit.SECONDS)));
+        List<Future<Object>> futures = new LinkedList<>();
+        futures.add(future1);
+        futures.add(future2);
+
+        Future<Iterable<Object>> futureSequence = sequence(futures, ec);
+
+        futureSequence.onSuccess(new OnSuccess<Iterable<Object>>() {
+            @Override
+            public void onSuccess(Iterable<Object> objects) throws Throwable {
+                for(Object object : objects){
+                    if(object instanceof Response){
+                        Response response = (Response) object;
+                        System.out.println("...");
+                    }
+                }
+            }
+        }, ec);
+    }
+
+    protected void executeRequest_blocking(final Request request, final ICallBack callBack) {
         Future<Object> future = Patterns.ask(beMasterActor, request, new Timeout(Duration.create(secondsTimeout, TimeUnit.SECONDS)));
-        Timeout timeout = new Timeout(Duration.create(5, "seconds"));
+        Timeout timeout = new Timeout(Duration.create(secondsTimeout, "seconds"));
         try {
             Object result = Await.result(future, timeout.duration());
             if(result instanceof Response){
@@ -87,6 +139,7 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
             e.printStackTrace();
         }
     }
+
     private void executeRequestNonBlocking(final Request request, final ICallBack callBack) {
         Future<Object> future = Patterns.ask(beMasterActor, request, new Timeout(Duration.create(secondsTimeout, TimeUnit.SECONDS)));
         final ExecutionContext ec = system.dispatcher();

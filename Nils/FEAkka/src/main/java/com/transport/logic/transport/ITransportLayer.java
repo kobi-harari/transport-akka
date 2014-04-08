@@ -1,5 +1,8 @@
 package com.transport.logic.transport;
 
+import com.nils.entities.transport.Request;
+import com.nils.entities.transport.Response;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -18,4 +21,5 @@ public interface ITransportLayer<T, ID extends Serializable> {
 
     void updateEntities(String entityType, List<T> entities, ICallBack callBack);
 
+    void orchestrate(List<Request> requests, final List<Response> responses);
 }

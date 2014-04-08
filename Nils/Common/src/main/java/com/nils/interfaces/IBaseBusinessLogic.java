@@ -1,5 +1,8 @@
 package com.nils.interfaces;
 
+import com.nils.entities.transport.Request;
+import com.nils.entities.transport.Response;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -19,4 +22,5 @@ public interface IBaseBusinessLogic<T,ID extends Serializable> {
     void save(List<T> entities);
 
     void update(List<T> entities);
+
 }

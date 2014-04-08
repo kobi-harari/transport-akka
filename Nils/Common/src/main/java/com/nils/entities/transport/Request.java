@@ -37,4 +37,14 @@ public class Request implements Serializable {
     static public enum Action {
         GET, SAVE, DELETE, UPDATE;
     }
+
+    @Override
+    public String toString() {
+        return "Request{" +
+                "metaData=" + metaData +
+                ", service='" + service + '\'' +
+                ", action=" + action +
+                ", message=" + message +
+                '}';
+    }
 }

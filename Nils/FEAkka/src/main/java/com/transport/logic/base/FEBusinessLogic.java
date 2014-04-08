@@ -1,6 +1,7 @@
 package com.transport.logic.base;
 
 import com.google.inject.Inject;
+import com.nils.entities.transport.Request;
 import com.nils.entities.transport.Response;
 import com.nils.entities.transport.Error;
 import com.nils.interfaces.IBaseBusinessLogic;
@@ -117,5 +118,11 @@ public class FEBusinessLogic<T, ID extends Serializable> implements IBaseBusines
                 //TODO
             }
         });
+    }
+
+    protected List<Response> orchestrate(List<Request> requests) {
+        final List<Response> responses = new LinkedList<>();
+        transportLayer.orchestrate(requests, responses);
+        return responses;
     }
 }

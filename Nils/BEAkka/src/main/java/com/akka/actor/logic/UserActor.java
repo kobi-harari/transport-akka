@@ -26,8 +26,7 @@ public class UserActor extends UntypedActor {
 
     private static final Logger logger = LoggerFactory.getLogger(UserActor.class);
     IBEUserBusinessLogic userLogic;
-    ActorRef smsActor = getContext().actorOf(
-            Props.create(SmsActor.class, IocInitializer.getInstance().getInjector()), "smsActor");
+    ActorRef smsActor;
 
     public UserActor(Injector injector) {
         userLogic = injector.getInstance(IBEUserBusinessLogic.class);
@@ -38,6 +37,8 @@ public class UserActor extends UntypedActor {
         // If we don't get any progress within 15 seconds then the service
         // is unavailable
 //        getContext().setReceiveTimeout(Duration.create("15 seconds"));
+        smsActor = getContext().actorOf(
+                Props.create(SmsActor.class, IocInitializer.getInstance().getInjector()), "smsActor");
     }
 
     @Override
