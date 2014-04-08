@@ -3,6 +3,7 @@ package com.transport.logic.transport;
 import akka.actor.*;
 //import akka.testkit.TestActorRef;
 import akka.util.Timeout;
+import com.nils.entities.User;
 import com.nils.entities.transport.*;
 import com.transport.logic.transport.beactors.FEMasterActor;
 import com.typesafe.config.ConfigFactory;
@@ -67,9 +68,7 @@ public class FEAkkaTransportTest {
     @Test
     public void testSimpleFlow() throws Exception {
 
-//        _system.eventStream().publish("Uri");
-
-        transportLayer.findByIds("User", Arrays.asList("1"), new ICallBack() {
+        transportLayer.findByIds("User", Arrays.asList("akka::1"), new ICallBack() {
             @Override
             public void onResponse(Response response) {
                 System.out.println(response.getMessage());
@@ -81,13 +80,33 @@ public class FEAkkaTransportTest {
                 System.out.println("Failure!");
             }
         });
+
+        try {
+            Thread.sleep(1000 * 15);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Test
-    public void testTestKitUsage() throws Exception {
-//        TestActorRef<FEMasterActor> actorRef = TestActorRef.apply(Props.create(FEMasterActor.class), _system);
-//
-//        _system.eventStream().publish("Uri");
+    public void testSaveFlow() throws Exception {
+
+        transportLayer.saveEntities("User", Arrays.asList(new User("akka::1","Kobi",40,"3")), new ICallBack() {
+            @Override
+            public void onResponse(Response response) {
+                System.out.println(response.getMessage());
+                System.out.println("Success!");
+            }
+
+            @Override
+            public void onError(com.nils.entities.transport.Error error) {
+                System.out.println("Failure!");
+            }
+        });
+
+
+
     }
 
 

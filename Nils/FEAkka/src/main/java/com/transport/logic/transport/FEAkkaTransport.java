@@ -48,7 +48,7 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
     }
 
     @Override
-    public void exists(String entityType, List<ID> ids, ICallBack callBack) {
+    public void exists(String entityType, List<ID> ids, final ICallBack callBack) {
         //TODO
     }
 
@@ -79,6 +79,35 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
                 logger.error("Failed to get response", throwable);
             }
         }, ec);
+    }
+
+    @Override
+    public void deleteEntities(String entityType, List<T> ids, final ICallBack callBack) {
+
+    }
+
+//    private
+
+    @Override
+    public void saveEntities(String entityType, List<T> entities, final ICallBack callBack) {
+        Request request = new Request(null, entityType, Request.Action.SAVE, (Serializable) entities);
+        Future<Object> future = Patterns.ask(beMasterActor, request, new Timeout(Duration.create(15, TimeUnit.SECONDS)));
+        final ExecutionContext ec = system.dispatcher();
+        future.onSuccess(new OnSuccess<Object>() {
+            public void onSuccess(Object result) {
+                if (result instanceof Response) {
+                    logger.info("SAVE action was successful");
+                    callBack.onResponse((Response) result);
+                }
+            }
+        }, ec);
+
+        future.onFailure(new OnFailure() {
+            @Override
+            public void onFailure(Throwable throwable) throws Throwable {
+                logger.error("Failed to SAVE", throwable);
+            }
+        }, ec);
 
         try {
             Thread.sleep(1000 * 15);
@@ -88,17 +117,7 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
     }
 
     @Override
-    public void deleteEntities(String entityType, List<T> ids, ICallBack callBack) {
-
-    }
-
-    @Override
-    public void saveEntities(String entityType, List<T> entities, ICallBack callBack) {
-
-    }
-
-    @Override
-    public void updateEntities(String entityType, List<T> entities, ICallBack callBack) {
+    public void updateEntities(String entityType, List<T> entities, final ICallBack callBack) {
 
     }
 }

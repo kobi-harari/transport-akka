@@ -39,8 +39,7 @@ public class GsonTranslator implements IJsonTranslator {
 
     @Override
     public Object encode(Object source) {
-        this.gson.toJson(source);
-        return null;
+        return this.gson.toJson(source);
     }
 
     @Override
