@@ -95,6 +95,22 @@ public class UserBusinessLogicTest {
     }
 
     @Test
+    public void testSave() throws Exception {
+        int count = 1;
+        List<User> usersToSave = new LinkedList<>();
+        List<String> ids = new LinkedList<>();
+        for (int i = 0; i < count; i++) {
+            User user = random.nextUser();
+            usersToSave.add(user);
+            ids.add(user.getId());
+        }
+        userBusinessLogic.save(usersToSave);
+        List<User> users = userBusinessLogic.find(ids);
+        Assert.assertEquals(count, users.size());
+    }
+
+
+    @Test
     public void testOrchestration() throws Exception {
         List<String> userIds = new LinkedList<>();
         List<String> accountIds = new LinkedList<>();

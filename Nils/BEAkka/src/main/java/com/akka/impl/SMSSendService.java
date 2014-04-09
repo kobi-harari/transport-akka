@@ -1,5 +1,6 @@
 package com.akka.impl;
 
+import com.akka.interfaces.IConfigurationHolder;
 import com.akka.interfaces.ISendMessage;
 import com.nexmo.messaging.sdk.NexmoSmsClient;
 import com.nexmo.messaging.sdk.messages.TextMessage;
@@ -14,9 +15,10 @@ public class SMSSendService implements ISendMessage {
     NexmoSmsClient smsClient;
 
     public SMSSendService() {
+        IConfigurationHolder configurationHolder = new ConfigurationHolder();
         try {
             logger.info("creating SMSSendService");
-            smsClient = new NexmoSmsClient("", "");
+            smsClient = new NexmoSmsClient(configurationHolder.getValue("sms.api.key"), configurationHolder.getValue("sms.api.api"));
         } catch (Exception e) {
             logger.error("could not init the sms client", e);
         }
