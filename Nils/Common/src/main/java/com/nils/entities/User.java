@@ -38,4 +38,24 @@ public class User extends BaseEntity {
                 ", accountId='" + accountId + '\'' +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+
+        if (age != user.age) return false;
+        if (!accountId.equals(user.accountId)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = age;
+        result = 31 * result + accountId.hashCode();
+        return result;
+    }
 }

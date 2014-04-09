@@ -26,7 +26,6 @@ public class UserActor extends UntypedActor {
 
     private static final Logger logger = LoggerFactory.getLogger(UserActor.class);
     IBEUserBusinessLogic userLogic;
-    ActorRef smsActor;
 
     public UserActor(Injector injector) {
         userLogic = injector.getInstance(IBEUserBusinessLogic.class);
@@ -36,9 +35,7 @@ public class UserActor extends UntypedActor {
     public void preStart() {
         // If we don't get any progress within 15 seconds then the service
         // is unavailable
-//        getContext().setReceiveTimeout(Duration.create("15 seconds"));
-        smsActor = getContext().actorOf(
-                Props.create(SmsActor.class, IocInitializer.getInstance().getInjector()), "smsActor");
+        logger.debug("UserActor preStart");
     }
 
     @Override
@@ -52,16 +49,15 @@ public class UserActor extends UntypedActor {
             switch (request.getAction()) {
                 case GET:
                     List<User> users = userLogic.find((List<String>) request.getMessage());
-                    response.setMessage((Serializable)users);
+                    System.out.println(" id: " + ((List<String>) request.getMessage()).get(0) + " Actor: " + this);
+                    response.setMessage((Serializable) users);
                     String [] rec = {"+972547375925", "+972502055999"};
-                    smsActor.tell(new SendMessageAttributes(rec,"GET was called","Is this cool sms sender is working from akka client ?  Sure is!"),getSelf());
                     break;
                 case DELETE:
                     userLogic.delete((List<String>) request.getMessage());
                     break;
                 case SAVE:
                     userLogic.save((List<User>) request.getMessage());
-                    smsActor.tell(new SendMessageAttributes(new String[]{"972502055999"}, "this is a save demo", "Is this cool sms sender is working from akka client ?  Sure is!"),getSelf());
                     break;
                 case UPDATE:
                     userLogic.update((List<User>) request.getMessage());

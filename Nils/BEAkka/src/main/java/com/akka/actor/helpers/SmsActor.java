@@ -4,6 +4,7 @@ import akka.actor.UntypedActor;
 import com.akka.entity.SendMessageAttributes;
 import com.akka.interfaces.ISendMessage;
 import com.google.inject.Injector;
+import com.nils.entities.transport.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +23,9 @@ public class SmsActor extends UntypedActor {
     @Override
     public void onReceive(Object o) throws Exception {
         logger.debug("SmsActor was called to send a message");
+        if(o instanceof Request){
+            System.out.println("bbb");
+        }
         if (o instanceof SendMessageAttributes){
             SendMessageAttributes messageAttributes = (SendMessageAttributes)o;
             sendMessageService.sendMessage(messageAttributes.getMessage(), messageAttributes.getSubject(),

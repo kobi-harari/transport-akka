@@ -1,16 +1,15 @@
 package com.transport.logic.transport;
 
 import com.nils.entities.Account;
+import com.nils.entities.BaseEntity;
 import com.nils.entities.User;
+import com.nils.entities.transport.Error;
 import com.nils.entities.transport.MetaData;
 import com.nils.entities.transport.Request;
 import com.nils.entities.transport.Response;
-import com.nils.entities.transport.Error;
+import com.transport.utils.MmRandom;
 import org.junit.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -23,37 +22,14 @@ import java.util.List;
  * Created by uri.silberstein on 4/3/14.
  */
 public class FEAkkaTransportTest {
-
     static ITransportLayer transportLayer;
     private long timeout = 1000 * 10;
     final List<Response> responses = new LinkedList<>();
+    MmRandom random = new MmRandom();
 
     @BeforeClass
     static public void setUp() throws Exception {
-        Logger logger = LoggerFactory.getLogger(FEAkkaTransportTest.class);
         transportLayer = new FEAkkaTransport();
-//        _system = ActorSystem.create("feactorsystem", ConfigFactory.load().getConfig("feconfig"));
-//
-//        final ActorRef actor = _system.actorOf(Props.create(
-//                new UntypedActorFactory() {
-//
-//                    @Override
-//                    public Actor create() throws Exception {
-//
-//                        return new UntypedActor() {
-//                            @Override
-//                            public void onReceive(Object message)
-//                                    throws Exception {
-//                                if (message instanceof String)
-//                                    System.out.println("Received String message: {}" + message);
-//                                else
-//                                    unhandled(message);
-//                            }
-//                        };
-//                    }
-//                }), "actor");
-//
-//        _system.eventStream().subscribe(actor, String.class);
     }
 
     @AfterClass
@@ -72,7 +48,7 @@ public class FEAkkaTransportTest {
     @Test
     public void testSimpleGetFlow() throws Exception {
         final String service = "User";
-        transportLayer.findByIds(service, Arrays.asList("akka::1"), new ICallBack() {
+        transportLayer.findByIds(service, Arrays.asList("akka::user::1"), new ICallBack() {
             @Override
             public void onResponse(Response response) {
                 Assert.assertEquals("Wrong service name was returned!", service, response.getService());
@@ -87,13 +63,13 @@ public class FEAkkaTransportTest {
                 Assert.fail("Failed running GET flow");
             }
         });
-        Assert.assertTrue("Failed to get Response!", isResponseWithTimeout(1, timeout));
+        Assert.assertEquals(1, responses.size());
     }
 
     @Test
     public void testSimpleSaveFlow() throws Exception {
         final String service = "User";
-        transportLayer.saveEntities(service, Arrays.asList(new User("akka::1", "Kobi", 40, "3")), new ICallBack() {
+        transportLayer.saveEntities(service, Arrays.asList(new User("akka::user::1", "Kobi", 40, "3")), new ICallBack() {
             @Override
             public void onResponse(Response response) {
                 Assert.assertEquals("Wrong service name was returned!", service, response.getService());
@@ -106,18 +82,44 @@ public class FEAkkaTransportTest {
                 Assert.fail("Failed running save flow");
             }
         });
-        Assert.assertTrue("Failed to get Response!", isResponseWithTimeout(1, timeout));
     }
 
     @Test
     public void testDeleteFlow() throws Exception {
         final String service = "User";
-        transportLayer.deleteEntities(service, Arrays.asList("akka::1"), new ICallBack() {
+        final String userId = "akka::user::1";
+
+        final List<Response> results = new LinkedList<>();
+        transportLayer.saveEntities("User", Arrays.asList(new User(userId, "Kobi", 40, "3")),new ICallBack() {
             @Override
             public void onResponse(Response response) {
-                Assert.assertEquals("Wrong service name was returned!", service, response.getService());
-                Assert.assertEquals("Wrong action was returned!", Request.Action.DELETE, response.getAction());
-                responses.add(response);
+                //do nothing
+            }
+
+            @Override
+            public void onError(Error error) {
+                Assert.fail("Failed running Save flow");
+            }
+        });
+
+
+        transportLayer.findByIds(service, Arrays.asList(userId), new ICallBack() {
+            @Override
+            public void onResponse(Response response) {
+                Assert.assertNotNull(response);
+                Assert.assertEquals(userId, ((List<? extends BaseEntity>) response.getMessage()).get(0).getId());
+            }
+            @Override
+            public void onError(Error error) {
+                Assert.fail("Failed running Get flow");
+            }
+        });
+
+
+        transportLayer.deleteEntities(service, Arrays.asList(userId), new ICallBack() {
+            @Override
+            public void onResponse(Response response) {
+                Assert.assertNotNull(response);
             }
 
             @Override
@@ -125,7 +127,19 @@ public class FEAkkaTransportTest {
                 Assert.fail("Failed running Delete flow");
             }
         });
-        Assert.assertTrue("Failed to get Response!", isResponseWithTimeout(1, timeout));
+
+        transportLayer.findByIds(service, Arrays.asList(userId), new ICallBack() {
+            @Override
+            public void onResponse(Response response) {
+                Assert.assertNotNull(response);
+                Assert.assertEquals(0, ((List) response.getMessage()).size());
+            }
+            @Override
+            public void onError(Error error) {
+                Assert.fail("Failed running Get flow");
+            }
+        });
+
     }
 
     @Test
@@ -144,7 +158,6 @@ public class FEAkkaTransportTest {
                 Assert.fail("Failed running update flow");
             }
         });
-        Assert.assertTrue("Failed to get Response!", isResponseWithTimeout(1, timeout));
     }
 
     @Test
@@ -163,7 +176,6 @@ public class FEAkkaTransportTest {
                 Assert.fail("Failed running save flow");
             }
         });
-        Assert.assertTrue("Failed to get Response!", isResponseWithTimeout(1, timeout));
     }
 
     @Test
@@ -184,7 +196,6 @@ public class FEAkkaTransportTest {
                 Assert.fail("Failed running save flow");
             }
         });
-        Assert.assertTrue("Failed to get Response!", isResponseWithTimeout(1, timeout));
     }
 
     @Test
@@ -203,7 +214,58 @@ public class FEAkkaTransportTest {
     }
 
     @Test
-    public void sendSmsTest(){
+    public void testGettingRouterFunctionality() throws Exception {
+        List<Request> requests = new LinkedList<>();
+        int count = 100;
+        for (int i = 0; i < count; i++) {
+            requests.add(new Request(new MetaData(), "User", Request.Action.GET, (Serializable) Arrays.asList(Integer.toString(i))));
+        }
+        transportLayer.orchestrate(requests, responses);
+        System.out.println("current results cnt " + responses.size());
+        Assert.assertEquals(count, responses.size());
+        responses.clear();
+    }
+
+    @Ignore
+    @Test
+    public void testSaveUsersAndAccounts() throws Exception {
+        List<Request> requests = new LinkedList<>();
+        int count = 1000;
+        List<User> users = new LinkedList<>();
+        for (int i = 0; i < count; i++) {
+            users.add(new User("akka::user::" + i, random.nextString(), random.nextInt(18, 67), "akka::account::" + random.nextInt(0, 1000)));
+        }
+
+        List<Account> accounts = new LinkedList<>();
+        for (int i = 0; i < count; i++) {
+            accounts.add(new Account("akka::account::" + i, random.nextString()));
+        }
+
+        requests.add(new Request(new MetaData(), "User", Request.Action.SAVE, (Serializable) users));
+        requests.add(new Request(new MetaData(), "Account", Request.Action.SAVE, (Serializable) accounts));
+        transportLayer.orchestrate(requests, responses);
+        System.out.println("Manage to run " + responses.size() + " requests");
+    }
+
+    @Test
+    public void testGetUsersAndAccounts() throws Exception {
+        List<String> userIds = new LinkedList<>();
+        List<String> accountIds = new LinkedList<>();
+        int count = 100;
+        for (int i = 0; i < count; i++) {
+            userIds.add("akka::user::"+ random.nextInt(0,10));
+            accountIds.add("akka::account::"+ random.nextInt(0,1000));
+        }
+
+        List<Request> requests = new LinkedList<>();
+        requests.add(new Request(new MetaData(), "User", Request.Action.GET, (Serializable) userIds));
+        requests.add(new Request(new MetaData(), "Account", Request.Action.GET, (Serializable) accountIds));
+        transportLayer.orchestrate(requests, responses);
+        System.out.println("Manage to run " + responses.size() + " requests");
+    }
+
+    @Test
+    public void sendSmsTest() {
         Request userRequest = new Request(new MetaData(), "User", Request.Action.GET, (Serializable) Arrays.asList("akka::1"));
         final String service = "User";
 
@@ -221,24 +283,4 @@ public class FEAkkaTransportTest {
             }
         });
     }
-
-
-
-    /**
-     * Pull (Check) the responses list to see that we got response from the TransportLayer, until the timeout is reached
-     *
-     * @param timeoutInMilliseconds
-     * @throws InterruptedException
-     */
-    private boolean isResponseWithTimeout(int count, long timeoutInMilliseconds) throws InterruptedException {
-        long start = System.currentTimeMillis();
-        long current = System.currentTimeMillis();
-        while (responses.size() != count && current < start + timeoutInMilliseconds) {
-            Thread.sleep(1000);
-            current = System.currentTimeMillis();
-        }
-        return !responses.isEmpty();
-    }
-
-
 }

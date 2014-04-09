@@ -15,6 +15,7 @@ import com.nils.entities.transport.Request;
 import com.nils.entities.transport.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.util.logging.resources.logging;
 
 import java.io.Serializable;
 import java.util.List;
@@ -25,7 +26,6 @@ import java.util.List;
 public class AccountActor extends UntypedActor {
     private static final Logger logger = LoggerFactory.getLogger(AccountActor.class);
     IBEAccountBusinessLogic accountLogic;
-    ActorRef smsActor;
 
     public AccountActor(Injector injector) {
         accountLogic = injector.getInstance(IBEAccountBusinessLogic.class);
@@ -35,8 +35,7 @@ public class AccountActor extends UntypedActor {
     public void preStart() {
         // If we don't get any progress within 15 seconds then the service
         // is unavailable
-        smsActor = getContext().actorOf(
-                Props.create(SmsActor.class, IocInitializer.getInstance().getInjector()), "smsActor");
+        logger.info("Account Actor preStart");
     }
 
     @Override
@@ -55,7 +54,6 @@ public class AccountActor extends UntypedActor {
                     break;
                 case SAVE:
                     accountLogic.save((List<Account>) request.getMessage());
-                    smsActor.tell(new SendMessageAttributes(new String[]{"972502055999"}, "this is a save demo", "this is a body demo"),getSelf());
                     break;
                 case UPDATE:
                     accountLogic.update((List<Account>) request.getMessage());

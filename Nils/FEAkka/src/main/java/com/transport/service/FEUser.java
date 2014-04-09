@@ -1,7 +1,10 @@
 package com.transport.service;
 
+import com.google.inject.Guice;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.nils.entities.User;
+import com.transport.ioc.SystemModule;
 import com.transport.logic.user.IUserBusinessLogic;
 import com.transport.logic.user.UserBusinessLogic;
 import org.slf4j.Logger;
@@ -27,6 +30,7 @@ public class FEUser {
 
     public FEUser() {
         System.out.println("This is not Nils Holgerson but we are going to talk to Akka about it");
+        Injector injector = Guice.createInjector(new SystemModule());
     }
 
     @GET

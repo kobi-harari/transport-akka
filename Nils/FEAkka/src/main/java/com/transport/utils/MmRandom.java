@@ -69,12 +69,12 @@ public class MmRandom {
     }
 
     public String nextSpecialCharactersString(int length) {
-        int specialChars = nextInt(0,length);
+        int specialChars = nextInt(0, length);
         char[] charArray = nextCharArray(length);
-        charArray[nextInt(0,length-1)] = SPECIAL_CHARACTERS.charAt(nextInt(0,SPECIAL_CHARACTERS.length()));
+        charArray[nextInt(0, length - 1)] = SPECIAL_CHARACTERS.charAt(nextInt(0, SPECIAL_CHARACTERS.length()));
         specialChars--;
-        while(specialChars>0){
-            charArray[nextInt(0,length-1)] = SPECIAL_CHARACTERS.charAt(nextInt(0,SPECIAL_CHARACTERS.length()));
+        while (specialChars > 0) {
+            charArray[nextInt(0, length - 1)] = SPECIAL_CHARACTERS.charAt(nextInt(0, SPECIAL_CHARACTERS.length()));
             specialChars--;
         }
         return new String(charArray);
@@ -93,12 +93,15 @@ public class MmRandom {
         return nextString(nextInt(5, 9));
     }
 
-    private long nextId(){
+    private long nextId() {
         return nextLong(1000000, 1000000000);
     }
 
+    String akkaUserIdPrefix = "akka::user::";
+    String akkaAccountIdPrefix = "akka::account::";
+
     public User nextUser(String name) {
-        return new User(UUID.randomUUID().toString(), name, nextInt(18,67), UUID.randomUUID().toString());
+        return new User(akkaUserIdPrefix + nextInt(1000, 2000), name, nextInt(18, 67), UUID.randomUUID().toString());
     }
 
     public User nextUser() {
@@ -106,7 +109,7 @@ public class MmRandom {
     }
 
     public Account nextAccount(String name) {
-        return new Account(UUID.randomUUID().toString(), name);
+        return new Account(akkaAccountIdPrefix + nextInt(1000, 2000), name);
     }
 
     public Account nextAccount() {

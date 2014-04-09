@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static akka.dispatch.Futures.fold;
 import static akka.dispatch.Futures.sequence;
 
 /**
@@ -86,6 +87,7 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
         for (Request request : requests) {
             futures.add(Patterns.ask(beMasterActor, request, new Timeout(Duration.create(secondsTimeout, TimeUnit.SECONDS))));
         }
+
         Future<Iterable<Object>> futureSequence = sequence(futures, ec);
 //        futureSequence.onSuccess(new OnSuccess<Iterable<Object>>() {
 //            @Override
@@ -99,8 +101,10 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
 //            }
 //        }, ec);
 
+//        fold(futures);
+
         try {
-            Iterable<Object> results = Await.result(futureSequence, Duration.create(secondsTimeout, TimeUnit.SECONDS));
+            Iterable<Object> results = Await.result(futureSequence, Duration.create("5 seconds"));
             for (Object result : results) {
                 if (result instanceof Response) {
                     responses.add((Response) result);
@@ -112,12 +116,14 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
     }
 
     protected void executeRequest(final Request request, final ICallBack callBack) {
+        executeRequest_blocking(request, callBack);
+    }
+
+    protected void executeRequest_nonBlocking(final Request request, final ICallBack callBack) {
         final ExecutionContext ec = system.dispatcher();
         Future<Object> future1 = Patterns.ask(beMasterActor, request, new Timeout(Duration.create(secondsTimeout, TimeUnit.SECONDS)));
-//        Future<Object> future2 = Patterns.ask(beMasterActor, request, new Timeout(Duration.create(secondsTimeout, TimeUnit.SECONDS)));
         List<Future<Object>> futures = new LinkedList<>();
         futures.add(future1);
-//        futures.add(future2);
         Future<Iterable<Object>> futureSequence = sequence(futures, ec);
         futureSequence.onSuccess(new OnSuccess<Iterable<Object>>() {
             @Override
@@ -125,7 +131,7 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
                 for (Object object : objects) {
                     if (object instanceof Response) {
                         Response response = (Response) object;
-//                        System.out.println("...");
+                        callBack.onResponse(response);
                     }
                 }
             }
@@ -137,11 +143,13 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
         Timeout timeout = new Timeout(Duration.create(secondsTimeout, "seconds"));
         try {
             Object result = Await.result(future, timeout.duration());
-            if (result instanceof Response) {
-                callBack.onResponse((Response) result);
-            }
-            if (result instanceof Error) {
-                callBack.onError((Error) result);
+            if (callBack != null) {
+                if (result instanceof Response) {
+                    callBack.onResponse((Response) result);
+                }
+                if (result instanceof Error) {
+                    callBack.onError((Error) result);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
