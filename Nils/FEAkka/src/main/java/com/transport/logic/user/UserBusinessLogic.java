@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sun.util.logging.resources.logging;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -46,5 +47,22 @@ public class UserBusinessLogic extends FEBusinessLogic<User, String> implements 
         }
 
         update(Arrays.asList(user));
+    }
+
+    @Override
+    public void getUsersAndAccount(List<String> userIds, List<String> accountIds, List<User> users, List<Account> accounts) {
+        Request userRequest = new Request(new MetaData(), "User", Request.Action.GET, (Serializable)userIds);
+        Request accountRequest = new Request(new MetaData(), "Account", Request.Action.GET, (Serializable)accountIds);
+        List<Response> responses = orchestrate(Arrays.asList(userRequest, accountRequest));
+
+        for(Response response : responses){
+            if(response.getService().equals("User")){
+                users.addAll((List<User>)response.getMessage());
+            }
+            if(response.getService().equals("Account")){
+                logger.info("Validated that the account exists");
+                accounts.addAll((List<Account>)response.getMessage());
+            }
+        }
     }
 }

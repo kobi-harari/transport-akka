@@ -25,12 +25,14 @@ public class FEUser {
 
     private static final Logger logger = LoggerFactory.getLogger(FEUser.class);
 
-    @Inject
+//    @Inject
     IUserBusinessLogic userLogic;
 
     public FEUser() {
         System.out.println("This is not Nils Holgerson but we are going to talk to Akka about it");
+        System.out.println("aaa");
         Injector injector = Guice.createInjector(new SystemModule());
+        userLogic = injector.getInstance(IUserBusinessLogic.class); //TODO AutoInject by Jersey context
     }
 
     @GET

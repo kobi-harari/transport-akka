@@ -3,6 +3,7 @@ package com.transport.logic.transport;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.internal.util.$SourceProvider;
+import com.nils.entities.Account;
 import com.nils.entities.User;
 import com.transport.ioc.SystemModule;
 import com.transport.logic.user.IUserBusinessLogic;
@@ -63,8 +64,8 @@ public class UserBusinessLogicTest {
 
     @Test
     public void testSimpleUpdate() throws Exception {
-        String initialName = "ZeroMQ";
-        String newName     = "Akka";
+        String initialName = "old Name";
+        String newName = "new Name";
         User user = random.nextUser();
         user.setName(initialName);
         userBusinessLogic.save(Arrays.asList(user));
@@ -80,10 +81,10 @@ public class UserBusinessLogicTest {
 
     @Test
     public void testSaveBulk() throws Exception {
-        int count = random.nextInt(10,20);
+        int count = random.nextInt(10, 20);
         List<User> usersToSave = new LinkedList<>();
         List<String> ids = new LinkedList<>();
-        for (int i = 0; i <count; i++) {
+        for (int i = 0; i < count; i++) {
             User user = random.nextUser();
             usersToSave.add(user);
             ids.add(user.getId());
@@ -91,6 +92,23 @@ public class UserBusinessLogicTest {
         userBusinessLogic.save(usersToSave);
         List<User> users = userBusinessLogic.find(ids);
         Assert.assertEquals(count, users.size());
+    }
+
+    @Test
+    public void testOrchestration() throws Exception {
+        List<String> userIds = new LinkedList<>();
+        List<String> accountIds = new LinkedList<>();
+        int count = random.nextInt(10, 20);
+        for (int i = 0; i < 10; i++) {
+            userIds.add("akka::user::" + random.nextInt(10, 100));
+            accountIds.add("akka::account::" + random.nextInt(10, 100));
+        }
+        final List<User> users = new LinkedList<>();
+        final List<Account> accounts = new LinkedList<>();
+        userBusinessLogic.getUsersAndAccount(userIds, accountIds, users, accounts);
+
+        Assert.assertEquals(count, users.size());
+        Assert.assertEquals(count, accounts.size());
     }
 
 }
