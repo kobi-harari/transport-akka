@@ -1,13 +1,14 @@
 package com.nils.entities;
 
-import java.util.List;
-
 /**
  * Created by uri.silberstein on 4/1/14.
  */
 public class User extends BaseEntity {
     int age;
     String accountId;
+
+    public User() {
+    }
 
     public User(String id, String name, int age, String accountId) {
         super(id, name);

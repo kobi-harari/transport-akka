@@ -1,12 +1,13 @@
 package com.akka.system;
 
 import com.akka.db.AccountDbTemplate;
-import com.akka.db.GsonTranslator;
 import com.akka.db.UserDbTemplate;
 import com.akka.impl.*;
 import com.akka.interfaces.*;
 import com.couchbase.client.CouchbaseClient;
-import com.google.inject.*;
+import com.google.inject.Binder;
+import com.google.inject.Module;
+import com.google.inject.Provides;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +30,7 @@ public class SystemModule implements Module {
         binder.bind(IAccountOperation.class).to(AccountDbTemplate.class);
         binder.bind(IBEAccountBusinessLogic.class).to(BEAccountBusinessLogic.class);
         binder.bind(IBEUserBusinessLogic.class).to(BEUserBusinessLogic.class);
-        binder.bind(IJsonTranslator.class).to(GsonTranslator.class);
+        binder.bind(IJsonTranslator.class).to(JacksonTranslator.class);
     }
 
     @Provides

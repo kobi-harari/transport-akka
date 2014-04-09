@@ -1,4 +1,4 @@
-package com.akka.db;
+package com.akka.impl;
 
 import com.akka.interfaces.IJsonTranslator;
 import com.google.gson.*;

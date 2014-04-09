@@ -1,13 +1,26 @@
 package com.nils.entities;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import java.io.Serializable;
 
 /**
  * Created by uri.silberstein on 4/1/14.
  */
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = User.class, name = "User"),
+        @JsonSubTypes.Type(value = Account.class, name = "Account")})
 public class BaseEntity implements Serializable {
     private String id;
     private String name;
+
+    public BaseEntity() {
+    }
 
     public BaseEntity(String id, String name) {
         this.id = id;
