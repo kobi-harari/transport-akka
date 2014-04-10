@@ -1,11 +1,14 @@
 package com.transport.logic.user;
 
+import com.google.inject.Inject;
 import com.nils.entities.Account;
 import com.nils.entities.User;
 import com.nils.entities.transport.MetaData;
 import com.nils.entities.transport.Request;
 import com.nils.entities.transport.Response;
+import com.nils.interfaces.IBaseBusinessLogic;
 import com.transport.logic.base.FEBusinessLogic;
+import com.transport.logic.transport.ITransportLayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sun.util.logging.resources.logging;
@@ -21,8 +24,10 @@ public class UserBusinessLogic extends FEBusinessLogic<User, String> implements 
 
     private static final Logger logger = LoggerFactory.getLogger(UserBusinessLogic.class);
 
-    public UserBusinessLogic() {
-        super(User.class);
+    @Inject
+    public UserBusinessLogic(ITransportLayer transportLayer) {
+        super(transportLayer);
+        setClazz(User.class);
     }
 
 

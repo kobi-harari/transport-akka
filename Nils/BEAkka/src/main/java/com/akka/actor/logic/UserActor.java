@@ -52,6 +52,7 @@ public class UserActor extends UntypedActor {
                     System.out.println(" id: " + ((List<String>) request.getMessage()).get(0) + " Actor: " + this);
                     response.setMessage((Serializable) users);
                     break;
+
                 case DELETE:
                     userLogic.delete((List<String>) request.getMessage());
                     break;
