@@ -90,7 +90,7 @@ public class FEAkkaTransportTest {
         final String userId = "akka::user::1";
 
         final List<Response> results = new LinkedList<>();
-        transportLayer.saveEntities("User", Arrays.asList(new User(userId, "Kobi", 40, "3")),new ICallBack() {
+        transportLayer.saveEntities("User", Arrays.asList(new User(userId, "Kobi", 40, "3")), new ICallBack() {
             @Override
             public void onResponse(Response response) {
                 //do nothing
@@ -109,6 +109,7 @@ public class FEAkkaTransportTest {
                 Assert.assertNotNull(response);
                 Assert.assertEquals(userId, ((List<? extends BaseEntity>) response.getMessage()).get(0).getId());
             }
+
             @Override
             public void onError(Error error) {
                 Assert.fail("Failed running Get flow");
@@ -134,6 +135,7 @@ public class FEAkkaTransportTest {
                 Assert.assertNotNull(response);
                 Assert.assertEquals(0, ((List) response.getMessage()).size());
             }
+
             @Override
             public void onError(Error error) {
                 Assert.fail("Failed running Get flow");
@@ -200,16 +202,15 @@ public class FEAkkaTransportTest {
 
     @Test
     public void testSimpleOrchestration() throws Exception {
-        for (int i = 0; i < 100; i++) {
+        int count = 1;
+        for (int i = 0; i < count; i++) {
             System.out.println("test #" + i);
             Request userRequest = new Request(new MetaData(), "User", Request.Action.GET, (Serializable) Arrays.asList("akka::1"));
             Request accountRequest = new Request(new MetaData(), "Account", Request.Action.GET, (Serializable) Arrays.asList("akka:aacount::1"));
             transportLayer.orchestrate(Arrays.asList(userRequest, accountRequest), responses);
             System.out.println("current results cnt " + responses.size());
-//        Assert.assertTrue("Failed to get Response!", isResponseWithTimeout(2,timeout));
             Assert.assertEquals(2, responses.size());
             responses.clear();
-//            Thread.sleep(1);
         }
     }
 
@@ -230,7 +231,7 @@ public class FEAkkaTransportTest {
     @Test
     public void testSaveUsersAndAccounts() throws Exception {
         List<Request> requests = new LinkedList<>();
-        int count = 1000;
+        int count = 5;
         List<User> users = new LinkedList<>();
         for (int i = 0; i < count; i++) {
             users.add(new User("akka::user::" + i, random.nextString(), random.nextInt(18, 67), "akka::account::" + random.nextInt(0, 1000)));
@@ -253,8 +254,8 @@ public class FEAkkaTransportTest {
         List<String> accountIds = new LinkedList<>();
         int count = 100;
         for (int i = 0; i < count; i++) {
-            userIds.add("akka::user::"+ random.nextInt(0,10));
-            accountIds.add("akka::account::"+ random.nextInt(0,1000));
+            userIds.add("akka::user::" + random.nextInt(0, 10));
+            accountIds.add("akka::account::" + random.nextInt(0, 1000));
         }
 
         List<Request> requests = new LinkedList<>();
