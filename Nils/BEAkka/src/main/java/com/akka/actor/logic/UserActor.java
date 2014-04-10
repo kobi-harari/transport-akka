@@ -51,7 +51,6 @@ public class UserActor extends UntypedActor {
                     List<User> users = userLogic.find((List<String>) request.getMessage());
                     System.out.println(" id: " + ((List<String>) request.getMessage()).get(0) + " Actor: " + this);
                     response.setMessage((Serializable) users);
-                    String [] rec = {"+972547375925", "+972502055999"};
                     break;
                 case DELETE:
                     userLogic.delete((List<String>) request.getMessage());

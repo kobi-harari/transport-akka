@@ -17,6 +17,7 @@ import scala.concurrent.Await;
 import scala.concurrent.ExecutionContext;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
+import scala.concurrent.duration.FiniteDuration;
 
 import java.io.Serializable;
 import java.util.LinkedList;
@@ -34,7 +35,8 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
     private Logger logger = LoggerFactory.getLogger(FEAkkaTransport.class);
     protected ActorSystem system;
     protected ActorRef beMasterActor;
-    protected long secondsTimeout = 10;
+    private Duration timeoutDuration = Duration.create("100 seconds");
+    private long secondsTimeout = 100;
 
     public FEAkkaTransport() throws Exception {
         logger.info("Starting FEActorSystem");
@@ -104,7 +106,7 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
 //        fold(futures);
 
         try {
-            Iterable<Object> results = Await.result(futureSequence, Duration.create("5 seconds"));
+            Iterable<Object> results = Await.result(futureSequence, timeoutDuration);
             for (Object result : results) {
                 if (result instanceof Response) {
                     responses.add((Response) result);

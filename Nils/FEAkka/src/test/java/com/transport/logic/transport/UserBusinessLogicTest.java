@@ -2,15 +2,12 @@ package com.transport.logic.transport;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.internal.util.$SourceProvider;
 import com.nils.entities.Account;
 import com.nils.entities.User;
 import com.transport.ioc.SystemModule;
 import com.transport.logic.user.IUserBusinessLogic;
 import com.transport.utils.MmRandom;
 import org.junit.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -86,6 +83,7 @@ public class UserBusinessLogicTest {
         List<String> ids = new LinkedList<>();
         for (int i = 0; i < count; i++) {
             User user = random.nextUser();
+            user.setId(generateUserId(i));
             usersToSave.add(user);
             ids.add(user.getId());
         }
@@ -111,20 +109,35 @@ public class UserBusinessLogicTest {
 
 
     @Test
-    public void testOrchestration() throws Exception {
-        List<String> userIds = new LinkedList<>();
-        List<String> accountIds = new LinkedList<>();
-        int count = random.nextInt(10, 20);
-        for (int i = 0; i < 10; i++) {
-            userIds.add("akka::user::" + random.nextInt(10, 100));
-            accountIds.add("akka::account::" + random.nextInt(10, 100));
-        }
+    public void testSimpleOrchestration() throws Exception {
+        int low = 1, high = 10;
+        verifyUsersExistsWithIdRange(low, high);
+        List<String> userIds = Arrays.asList("akka::user::1","akka::user::5","akka::user::9");
+        List<String> accountIds = Arrays.asList("akka::account::1","akka::account::5","akka::account::9");
         final List<User> users = new LinkedList<>();
         final List<Account> accounts = new LinkedList<>();
-        userBusinessLogic.getUsersAndAccount(userIds, accountIds, users, accounts);
 
-        Assert.assertEquals(count, users.size());
-        Assert.assertEquals(count, accounts.size());
+        userBusinessLogic.getUsersAndAccount(userIds, accountIds, users, accounts);
+        Assert.assertEquals(userIds.size(), users.size());
+        Assert.assertNotNull(accounts);
+    }
+
+    private void verifyUsersExistsWithIdRange(int low, int high) {
+        List<User> usersToSave = new LinkedList<>();
+        List<String> ids = new LinkedList<>();
+        for (int i = low; i < high; i++) {
+            User user = random.nextUser();
+            user.setId(generateUserId(i));
+            usersToSave.add(user);
+            ids.add(user.getId());
+        }
+        userBusinessLogic.save(usersToSave);
+        List<User> users = userBusinessLogic.find(ids);
+        Assert.assertEquals(high - low, users.size());
+    }
+
+    private String generateUserId(int id) {
+        return "akka::user::" + id;
     }
 
 }
