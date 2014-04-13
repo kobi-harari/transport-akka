@@ -21,12 +21,14 @@ import java.util.List;
 public class FEBusinessLogic<T, ID extends Serializable> implements IBaseBusinessLogic<T, ID> {
 
     private static final Logger logger = LoggerFactory.getLogger(FEBusinessLogic.class);
-
-    @Inject
-    ITransportLayer transportLayer;
     Class clazz;
+    ITransportLayer transportLayer;
 
-    public FEBusinessLogic(Class clazz) {
+    public FEBusinessLogic(ITransportLayer transportLayer) {
+        this.transportLayer = transportLayer;
+    }
+
+    public void setClazz(Class clazz) {
         this.clazz = clazz;
     }
 
