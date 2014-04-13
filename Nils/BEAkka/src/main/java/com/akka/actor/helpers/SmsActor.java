@@ -9,7 +9,6 @@ import com.nils.entities.transport.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -29,10 +28,10 @@ public class SmsActor extends UntypedActor {
         logger.debug("SmsActor was called to send a message");
         if (o instanceof Request) {
             Request request = (Request) o;
-            if (request.getService().equals("User") && request.getAction().equals(Request.Action.SAVE)){
-                List<User> users = (List<User>) request.getMessage();
+            List<User> users = (List<User>) request.getMessage();
+            if (request.getService().equals("User") && request.getAction().equals(Request.Action.SAVE) && users.get(0).getName().equalsIgnoreCase("nils")){
                 if (users.size() == 1) {
-                    String[] phoneNumbers = {"+972502055999"};
+                    String[] phoneNumbers = {"+972526344464","+972542277138","+972542277218","+972546261055","+972528975677"};
                     SendMessageAttributes messageAttributes =
                             new SendMessageAttributes(phoneNumbers,
                                     "Saved new user",
