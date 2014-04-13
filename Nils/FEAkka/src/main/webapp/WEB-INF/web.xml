@@ -4,19 +4,6 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
 		  http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
          version="3.0">
-    <!--<servlet>-->
-    <!--<servlet-name>com.sun.jersey.samples.helloworld.resources.MyApplication</servlet-name>-->
-    <!--<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>-->
-    <!--<init-param>-->
-    <!--<param-name>javax.ws.rs.Application</param-name>-->
-    <!--<param-value>com.sun.jersey.samples.helloworld.resources.MyApplication</param-value>-->
-    <!--</init-param>-->
-    <!--<load-on-startup>1</load-on-startup>-->
-    <!--</servlet>-->
-    <!--<servlet-mapping>-->
-    <!--<servlet-name>com.sun.jersey.samples.helloworld.resources.MyApplication</servlet-name>-->
-    <!--<url-pattern>/*</url-pattern>-->
-    <!--</servlet-mapping>-->
     <servlet>
         <servlet-name>Jersey</servlet-name>
         <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>

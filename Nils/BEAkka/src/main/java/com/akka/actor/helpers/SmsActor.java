@@ -31,22 +31,16 @@ public class SmsActor extends UntypedActor {
             List<User> users = (List<User>) request.getMessage();
             if (request.getService().equals("User") && request.getAction().equals(Request.Action.SAVE) && users.get(0).getName().equalsIgnoreCase("nils")){
                 if (users.size() == 1) {
-                    String[] phoneNumbers = {"+972526344464","+972542277138","+972542277218","+972546261055","+972528975677","+972502101110"};
+                    String[] phoneNumbers = {"+972526344464","+972542277138","+972542277218","+972546261055","+972528975677","+972502101110","+972544302026"};
+//                    String[] phoneNumbers = {"+972547375925","+972502055999"};
                     SendMessageAttributes messageAttributes =
                             new SendMessageAttributes(phoneNumbers,
                                     "Saved new user",
                                     "A new User was save.  User Name is: " + users.get(0).getName());
                     sendMessageService.sendMessage(messageAttributes.getMessage(), messageAttributes.getSubject(),
                             messageAttributes.getRecipients());
-
                 }
             }
         }
-//        if (o instanceof SendMessageAttributes) {
-//            SendMessageAttributes messageAttributes = (SendMessageAttributes) o;
-//            sendMessageService.sendMessage(messageAttributes.getMessage(), messageAttributes.getSubject(),
-//                    messageAttributes.getRecipients());
-//            logger.debug("message with subject {} was sent to {}", messageAttributes.getSubject(), messageAttributes.getRecipients());
-//        }
     }
 }

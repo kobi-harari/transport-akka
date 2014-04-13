@@ -89,22 +89,7 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
         for (Request request : requests) {
             futures.add(Patterns.ask(beMasterActor, request, new Timeout(Duration.create(secondsTimeout, TimeUnit.SECONDS))));
         }
-
         Future<Iterable<Object>> futureSequence = sequence(futures, ec);
-//        futureSequence.onSuccess(new OnSuccess<Iterable<Object>>() {
-//            @Override
-//            public void onSuccess(Iterable<Object> objects) throws Throwable {
-//                for (Object object : objects) {
-//                    if (object instanceof Response) {
-//                        logger.info("got response in orchestrations");
-//                        responses.add((Response) object);
-//                    }
-//                }
-//            }
-//        }, ec);
-
-//        fold(futures);
-
         try {
             Iterable<Object> results = Await.result(futureSequence, timeoutDuration);
             for (Object result : results) {

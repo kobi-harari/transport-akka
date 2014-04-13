@@ -23,18 +23,14 @@ import java.util.Arrays;
 @Singleton
 @Path("/user")
 public class FEUser {
-
     private static final Logger logger = LoggerFactory.getLogger(FEUser.class);
-
-    //    @Inject
     IUserBusinessLogic userLogic;
     IJsonTranslator<String> jsonSerilizer;
 
     public FEUser() {
-        System.out.println("This is not Nils Holgerson but we are going to talk to Akka about it");
-        System.out.println("aaa");
         Injector injector = Guice.createInjector(new SystemModule());
-        userLogic = injector.getInstance(IUserBusinessLogic.class); //TODO AutoInject by Jersey context
+        //TODO AutoInject by Jersey context
+        userLogic = injector.getInstance(IUserBusinessLogic.class);
         jsonSerilizer = injector.getInstance(IJsonTranslator.class);
     }
 
@@ -56,18 +52,7 @@ public class FEUser {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
-    public void save(@Suspended final AsyncResponse asyncResponse, String userStr) {
-        User user = (User) jsonSerilizer.decode(userStr, User.class);
-        logger.debug("save User: {}", userStr);
-        userLogic.save(Arrays.asList(user));
-        asyncResponse.resume("User was saved!");
-    }
-
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.TEXT_PLAIN)
-    @Path("/test")
-    public void saveaaaa(@Suspended final AsyncResponse asyncResponse, User user) {
+    public void save(@Suspended final AsyncResponse asyncResponse, User user) {
         logger.debug("save User: {}", user);
         userLogic.save(Arrays.asList(user));
         asyncResponse.resume("User was saved!");

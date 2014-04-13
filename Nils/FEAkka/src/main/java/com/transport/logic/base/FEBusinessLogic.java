@@ -49,7 +49,7 @@ public class FEBusinessLogic<T, ID extends Serializable> implements IBaseBusines
 
             @Override
             public void onError(Error error) {
-                //TODO
+                logger.error("Failed to check existence! errorCode: {}, errorMessage: {}", error.getErrorCode(), error.getMessage());
             }
         });
         return toReturn[0];
@@ -68,7 +68,7 @@ public class FEBusinessLogic<T, ID extends Serializable> implements IBaseBusines
 
             @Override
             public void onError(Error error) {
-                //TODO
+                logger.error("Failed to find by id! errorCode: {}, errorMessage: {}", error.getErrorCode(), error.getMessage());
             }
         });
         return toReturn;
@@ -80,12 +80,12 @@ public class FEBusinessLogic<T, ID extends Serializable> implements IBaseBusines
         transportLayer.deleteEntities(clazz.getSimpleName(), ids, new ICallBack() {
             @Override
             public void onResponse(Response response) {
-                //TODO
+                logger.error("Delete entities completed!");
             }
 
             @Override
             public void onError(Error error) {
-                //TODO
+                logger.error("Failed to Delete by id! errorCode: {}, errorMessage: {}", error.getErrorCode(), error.getMessage());
             }
         });
     }
@@ -96,12 +96,12 @@ public class FEBusinessLogic<T, ID extends Serializable> implements IBaseBusines
         transportLayer.saveEntities(clazz.getSimpleName(), entities, new ICallBack() {
             @Override
             public void onResponse(Response response) {
-                //TODO
+                logger.error("Save entities completed!");
             }
 
             @Override
             public void onError(Error error) {
-                //TODO
+                logger.error("Failed to save entities! errorCode: {}, errorMessage: {}", error.getErrorCode(), error.getMessage());
             }
         });
     }
@@ -112,12 +112,12 @@ public class FEBusinessLogic<T, ID extends Serializable> implements IBaseBusines
         transportLayer.updateEntities(clazz.getSimpleName(), entities, new ICallBack() {
             @Override
             public void onResponse(Response response) {
-                //TODO
+                logger.error("Update entities completed!");
             }
 
             @Override
             public void onError(Error error) {
-                //TODO
+                logger.error("Failed to update entities! errorCode: {}, errorMessage: {}", error.getErrorCode(), error.getMessage());
             }
         });
     }

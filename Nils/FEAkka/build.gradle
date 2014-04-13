@@ -17,6 +17,8 @@ dependencies {
     //TODO check why it's not working with Async
     compile 'org.glassfish.jersey.containers:jersey-container-servlet:2.4.1'
     compile 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.3.2'
+    compile 'javax.ws.rs:javax.ws.rs-api:2.0'
+    
     compile 'com.typesafe.akka:akka-remote_2.10:2.3.0'
     compile 'com.typesafe.akka:akka-testkit_2.10:2.3.0'
     compile 'org.slf4j:slf4j-api:1.7.6'
