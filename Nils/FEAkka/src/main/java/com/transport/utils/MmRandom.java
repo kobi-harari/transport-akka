@@ -1,8 +1,11 @@
 package com.transport.utils;
 
 import com.nils.entities.Account;
+import com.nils.entities.Order;
+import com.nils.entities.OrderItem;
 import com.nils.entities.User;
 
+import java.util.Date;
 import java.util.Random;
 import java.util.UUID;
 
@@ -99,6 +102,8 @@ public class MmRandom {
 
     String akkaUserIdPrefix = "akka::user::";
     String akkaAccountIdPrefix = "akka::account::";
+    String akkaOrderIdPrefix = "akka::order::";
+    String akkaOrderItemIdPrefix = "akka::orderItem::";
 
     public User nextUser(String name) {
         return new User(akkaUserIdPrefix + nextInt(1000, 2000), name, nextInt(18, 67), UUID.randomUUID().toString());
@@ -115,4 +120,18 @@ public class MmRandom {
     public Account nextAccount() {
         return nextAccount(nextString(5, 7));
     }
+
+    public Order nextOrder() { return nextOrder(nextString(5,7));
+    }
+
+    private Order nextOrder(String name) {
+        return new Order(akkaOrderIdPrefix + nextInt(3000,4000),name,"akka:account::1",nextString(4,7),new Date());
+    }
+    public OrderItem nextOrderItem() { return nextOrderItem(nextString(5,7));
+    }
+
+    private OrderItem nextOrderItem(String name) {
+        return new OrderItem(akkaOrderItemIdPrefix + nextInt(2000,3000),name,"akka:order::1",nextString(4,7),nextInt(7,15));
+    }
+
 }

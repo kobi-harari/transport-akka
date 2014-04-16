@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -62,6 +63,9 @@ public class UserActor extends UntypedActor {
                 case UPDATE:
                     userLogic.update((List<User>) request.getMessage());
                     break;
+                case FIND_BY_PROPERTY:
+                    users = userLogic.findByProperties((Map<String,Object>)request.getMessage());
+                    response.setMessage((Serializable)users);
                 default:
                     logger.error("non valid action");
             }

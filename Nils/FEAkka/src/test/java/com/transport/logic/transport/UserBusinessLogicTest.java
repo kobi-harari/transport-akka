@@ -3,22 +3,28 @@ package com.transport.logic.transport;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.nils.entities.Account;
+import com.nils.entities.Order;
+import com.nils.entities.OrderItem;
 import com.nils.entities.User;
 import com.transport.ioc.SystemModule;
+import com.transport.logic.account.IAccountBusinessLogic;
+import com.transport.logic.item.IOrderItemBusinessLogic;
+import com.transport.logic.order.IOrderBusinessLogic;
 import com.transport.logic.user.IUserBusinessLogic;
 import com.transport.utils.MmRandom;
 import org.junit.*;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by uri.silberstein on 4/8/14.
  */
 public class UserBusinessLogicTest {
     static IUserBusinessLogic userBusinessLogic;
+    static IAccountBusinessLogic accountBusinessLogic;
+    static IOrderBusinessLogic orderBusinessLogic;
+    static IOrderItemBusinessLogic orderItemBusinessLogic;
     static Injector injector;
     MmRandom random = new MmRandom();
 
@@ -26,6 +32,9 @@ public class UserBusinessLogicTest {
     static public void setUp() throws IOException {
         injector = Guice.createInjector(new SystemModule());
         userBusinessLogic = injector.getInstance(IUserBusinessLogic.class);
+        accountBusinessLogic = injector.getInstance(IAccountBusinessLogic.class);
+        orderBusinessLogic = injector.getInstance(IOrderBusinessLogic.class);
+        orderItemBusinessLogic = injector.getInstance(IOrderItemBusinessLogic.class);
     }
 
     @AfterClass
@@ -120,6 +129,25 @@ public class UserBusinessLogicTest {
         userBusinessLogic.getUsersAndAccount(userIds, accountIds, users, accounts);
         Assert.assertEquals(userIds.size(), users.size());
         Assert.assertNotNull(accounts);
+    }
+
+    @Test
+    public void testSaveOrderWithItems(){
+        User u = random.nextUser();
+        u.setAccountId("akka::account::2");
+        userBusinessLogic.save(Arrays.asList(u));
+        Account a = random.nextAccount();
+        a.setId("akka::account::2");
+        accountBusinessLogic.save(Arrays.asList(a));
+        Order o = random.nextOrder();
+        o.setId("akka::order::2");
+        o.setAccountId("akka::account::2");
+        orderBusinessLogic.save(Arrays.asList(o));
+        OrderItem oi = random.nextOrderItem();
+        oi.setOrderId("akka::order::2");
+        orderItemBusinessLogic.save(Arrays.asList(oi));
+        List<User> users = userBusinessLogic.getUsersByOrderItemId(oi.getId());
+        Assert.assertNotEquals("There should be at least one user in the db that is related to this account", 0,users.size());
     }
 
     private void verifyUsersExistsWithIdRange(int low, int high) {

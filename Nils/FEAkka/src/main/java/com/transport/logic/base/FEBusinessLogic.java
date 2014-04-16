@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by uri.silberstein on 4/2/14.
@@ -22,7 +23,7 @@ public class FEBusinessLogic<T, ID extends Serializable> implements IBaseBusines
 
     private static final Logger logger = LoggerFactory.getLogger(FEBusinessLogic.class);
     Class clazz;
-    ITransportLayer transportLayer;
+    protected ITransportLayer transportLayer;
 
     public FEBusinessLogic(ITransportLayer transportLayer) {
         this.transportLayer = transportLayer;
@@ -72,6 +73,11 @@ public class FEBusinessLogic<T, ID extends Serializable> implements IBaseBusines
             }
         });
         return toReturn;
+    }
+
+    @Override
+    public List<T> findByProperties(Map<String, Object> propertise) {
+        return null;
     }
 
     @Override

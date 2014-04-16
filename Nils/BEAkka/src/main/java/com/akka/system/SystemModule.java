@@ -1,6 +1,8 @@
 package com.akka.system;
 
 import com.akka.db.AccountDbTemplate;
+import com.akka.db.OrderDbTemplate;
+import com.akka.db.OrderItemDbTemplate;
 import com.akka.db.UserDbTemplate;
 import com.akka.impl.*;
 import com.akka.interfaces.*;
@@ -28,8 +30,12 @@ public class SystemModule implements Module {
         binder.bind(ISendMessage.class).to(SMSSendService.class);
         binder.bind(IUserOperation.class).to(UserDbTemplate.class);
         binder.bind(IAccountOperation.class).to(AccountDbTemplate.class);
+        binder.bind(IOrderOperation.class).to(OrderDbTemplate.class);
+        binder.bind(IOrderItemOperation.class).to(OrderItemDbTemplate.class);
         binder.bind(IBEAccountBusinessLogic.class).to(BEAccountBusinessLogic.class);
         binder.bind(IBEUserBusinessLogic.class).to(BEUserBusinessLogic.class);
+        binder.bind(IBEOrderBusinessLogic.class).to(BEOrderBusinessLogic.class);
+        binder.bind(IBEOrderItemBusinessLogic.class).to(BEOrderItemBusinessLogic.class);
         binder.bind(IJsonTranslator.class).to(JacksonTranslator.class);
     }
 

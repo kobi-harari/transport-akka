@@ -8,6 +8,8 @@ import akka.routing.Resizer;
 import akka.routing.RoundRobinRouter;
 import akka.routing.RouterConfig;
 import com.akka.actor.logic.AccountActor;
+import com.akka.actor.logic.OrderActor;
+import com.akka.actor.logic.OrderItemActor;
 import com.akka.actor.logic.UserActor;
 import com.akka.system.IocInitializer;
 import com.nils.entities.transport.Error;
@@ -33,6 +35,8 @@ public class BEMasterActor extends UntypedActor {
 
     private final ActorRef userActor;
     private final ActorRef accountActor;
+    private final ActorRef orderActor;
+    private final ActorRef orderItemActor;
 
 
     public BEMasterActor() {
@@ -48,6 +52,10 @@ public class BEMasterActor extends UntypedActor {
                 Props.create(UserActor.class, IocInitializer.getInstance().getInjector()).withRouter(new RoundRobinRouter(5)), "userActor");
         accountActor = getContext().actorOf(
                 Props.create(AccountActor.class, IocInitializer.getInstance().getInjector()), "accountActor");
+        orderActor = getContext().actorOf(
+                Props.create(OrderActor.class, IocInitializer.getInstance().getInjector()), "orderActor");
+        orderItemActor = getContext().actorOf(
+                Props.create(OrderItemActor.class, IocInitializer.getInstance().getInjector()), "orderItemActor");
     }
 
     @Override
@@ -62,6 +70,14 @@ public class BEMasterActor extends UntypedActor {
                         userActor.forward(message, getContext());
                         break;
                     case "Account":
+                        logger.info("BEMasterActor forwarding msg to AccountActor, {}", message);
+                        accountActor.forward(message, getContext());
+                        break;
+                    case "OrderItem":
+                        logger.info("BEMasterActor forwarding msg to AccountActor, {}", message);
+                        accountActor.forward(message, getContext());
+                        break;
+                    case "Order":
                         logger.info("BEMasterActor forwarding msg to AccountActor, {}", message);
                         accountActor.forward(message, getContext());
                         break;

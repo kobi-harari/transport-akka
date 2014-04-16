@@ -35,7 +35,7 @@ public class Request implements Serializable {
     }
 
     static public enum Action {
-        GET, SAVE, DELETE, UPDATE;
+        GET, SAVE, DELETE, UPDATE, FIND_BY_PROPERTY;
     }
 
     @Override

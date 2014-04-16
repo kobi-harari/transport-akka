@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by uri.silberstein on 4/3/14.
@@ -39,6 +40,12 @@ public class BEBaseBusinessLogic<T,ID extends Serializable> implements IBaseBusi
     public List<T> find(List<ID> ids) {
         logger.debug("find in base in business logic");
         return dbOperations.find(ids);
+    }
+
+    @Override
+    public List<T> findByProperties(Map<String, Object> propertise) {
+        logger.debug("find by property in business logic");
+        return dbOperations.findByProperties(propertise);
     }
 
     @Override

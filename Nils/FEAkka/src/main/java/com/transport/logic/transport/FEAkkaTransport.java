@@ -22,6 +22,7 @@ import scala.concurrent.duration.FiniteDuration;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static akka.dispatch.Futures.fold;
@@ -62,6 +63,11 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
     @Override
     public void findByIds(String entityType, List<ID> ids, final ICallBack callBack) {
         executeRequest(new Request(null, entityType, Request.Action.GET, (Serializable) ids), callBack);
+    }
+
+    @Override
+    public void findByProperties(String entityType, Map<String, ID> properties, ICallBack callBack) {
+        executeRequest(new Request(null, entityType, Request.Action.FIND_BY_PROPERTY,(Serializable)properties), callBack);
     }
 
     @Override

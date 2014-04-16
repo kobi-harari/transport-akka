@@ -4,6 +4,7 @@ import com.nils.entities.BaseEntity;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by kobi on 4/5/14.
@@ -13,6 +14,8 @@ public interface DbOperations <T extends BaseEntity,ID extends Serializable>{
     boolean exists(ID id);
 
     <T> List<T> find(List<ID> ids);
+
+    <T> List<T> findByProperties(Map<String, Object> properties);
 
     <T> T find(ID id);
 

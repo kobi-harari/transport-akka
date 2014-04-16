@@ -14,6 +14,8 @@ import java.io.Serializable;
         property = "type")
 @JsonSubTypes({
         @JsonSubTypes.Type(value = User.class, name = "User"),
+        @JsonSubTypes.Type(value = Order.class, name = "Order"),
+        @JsonSubTypes.Type(value = OrderItem.class, name = "OrderItem"),
         @JsonSubTypes.Type(value = Account.class, name = "Account")})
 public class BaseEntity implements Serializable {
     private String id;

@@ -18,8 +18,8 @@ import java.util.Map;
  */
 public class DbTemplate<T extends BaseEntity, ID extends Serializable> implements DbOperations {
     private Logger logger = LoggerFactory.getLogger(DbTemplate.class);
-    private CouchbaseClient client = null;
-    private IJsonTranslator jsonTranslator;
+    protected CouchbaseClient client = null;
+    protected IJsonTranslator jsonTranslator;
 
     public DbTemplate(CouchbaseClient client, IJsonTranslator jsonTranslator) {
         logger.info("creating new dbTemplate");
@@ -31,6 +31,11 @@ public class DbTemplate<T extends BaseEntity, ID extends Serializable> implement
     @Override
     public boolean exists(Serializable id) {
         return client.get(id.toString()) != null;
+    }
+
+    @Override
+    public List<T> findByProperties(Map properties) {
+        return null;
     }
 
     @Override
