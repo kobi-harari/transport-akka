@@ -1,4 +1,4 @@
-apply plugin: 'java'
+    apply plugin: 'java'
 apply plugin: 'war'
 
 version = 1.0
@@ -19,12 +19,11 @@ dependencies {
     compile 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.3.2'
     compile 'javax.ws.rs:javax.ws.rs-api:2.0'
     
-    compile 'com.typesafe.akka:akka-remote_2.10:2.3.0'
-    compile 'com.typesafe.akka:akka-testkit_2.10:2.3.0'
     compile 'org.slf4j:slf4j-api:1.7.6'
 
     compile 'ch.qos.logback:logback-classic:1.1.1'
     compile 'com.google.inject:guice:3.0'
 
     compile project(':Common')
+    compile project(':BEAkka')
 }

@@ -14,5 +14,8 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.3.0'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.3.0'
     compile 'com.google.code.gson:gson:2.2.4'
+    compile 'com.typesafe.akka:akka-remote_2.10:2.3.2'
+    compile 'com.typesafe.akka:akka-testkit_2.10:2.3.2'
+    compile 'com.typesafe.akka:akka-cluster_2.10:2.3.2'
 
 }

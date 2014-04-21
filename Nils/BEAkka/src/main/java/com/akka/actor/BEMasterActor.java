@@ -1,30 +1,22 @@
 package com.akka.actor;
 
-import akka.actor.*;
-import akka.japi.Function;
-import akka.remote.routing.RemoteRouterConfig;
-import akka.routing.DefaultResizer;
-import akka.routing.Resizer;
-import akka.routing.RoundRobinRouter;
-import akka.routing.RouterConfig;
+import akka.actor.ActorRef;
+import akka.actor.Props;
+import akka.actor.UntypedActor;
 import com.akka.actor.logic.AccountActor;
 import com.akka.actor.logic.OrderActor;
 import com.akka.actor.logic.OrderItemActor;
 import com.akka.actor.logic.UserActor;
 import com.akka.system.IocInitializer;
+import com.akka.system.SystemModule;
+import com.google.inject.Module;
 import com.nils.entities.transport.Error;
 import com.nils.entities.transport.Request;
-import com.nils.entities.transport.Response;
-import com.sun.xml.internal.messaging.saaj.packaging.mime.MessagingException;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scala.concurrent.duration.Duration;
 
-import static akka.actor.SupervisorStrategy.escalate;
-import static akka.actor.SupervisorStrategy.resume;
-import static akka.actor.SupervisorStrategy.stop;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by uri.silberstein on 4/3/14.
@@ -42,14 +34,13 @@ public class BEMasterActor extends UntypedActor {
     public BEMasterActor() {
         logger.info("creating the master dispatcher for this be service");
 
-//        Resizer resizer = new DefaultResizer(1,10);
-        Config beconfig = ConfigFactory.load().getConfig("beconfig");
-//        RouterConfig routerConfig = new RemoteRouterConfig();
-//
-//        Deploy deploy = new Deploy(RouterConfig );
+        List<Module> moduleList = new ArrayList<Module>(1);
+        moduleList.add(new SystemModule());
+        IocInitializer.getInstance().setModules(moduleList);
+
 
         userActor = getContext().actorOf(
-                Props.create(UserActor.class, IocInitializer.getInstance().getInjector()).withRouter(new RoundRobinRouter(5)), "userActor");
+                Props.create(UserActor.class, IocInitializer.getInstance().getInjector()), "userActor");
         accountActor = getContext().actorOf(
                 Props.create(AccountActor.class, IocInitializer.getInstance().getInjector()), "accountActor");
         orderActor = getContext().actorOf(
@@ -94,27 +85,27 @@ public class BEMasterActor extends UntypedActor {
         }
     }
 
-    /**
-     * Strategy for Master Actor children
-     */
-    private static SupervisorStrategy strategy =
-            new OneForOneStrategy(10, Duration.create("1 minute"),
-                    new Function<Throwable, SupervisorStrategy.Directive>() {
-                        @Override
-                        public SupervisorStrategy.Directive apply(Throwable t) {
-                            if (t instanceof MessagingException) {
-                                return resume();
-                            } else if (t instanceof Exception) {
-                                return stop();
-                            } else {
-                                return escalate();
-                            }
-                        }
-                    });
-
-    @Override
-    public SupervisorStrategy supervisorStrategy() {
-        return strategy;
-    }
+//    /**
+//     * Strategy for Master Actor children
+//     */
+//    private static SupervisorStrategy strategy =
+//            new OneForOneStrategy(10, Duration.create("1 minute"),
+//                    new Function<Throwable, SupervisorStrategy.Directive>() {
+//                        @Override
+//                        public SupervisorStrategy.Directive apply(Throwable t) {
+//                            if (t instanceof MessagingException) {
+//                                return resume();
+//                            } else if (t instanceof Exception) {
+//                                return stop();
+//                            } else {
+//                                return escalate();
+//                            }
+//                        }
+//                    });
+//
+//    @Override
+//    public SupervisorStrategy supervisorStrategy() {
+//        return strategy;
+//    }
 
 }

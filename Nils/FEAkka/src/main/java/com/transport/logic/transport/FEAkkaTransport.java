@@ -3,13 +3,16 @@ package com.transport.logic.transport;
 import akka.actor.ActorRef;
 import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
+import akka.actor.Props;
 import akka.dispatch.OnFailure;
 import akka.dispatch.OnSuccess;
 import akka.pattern.Patterns;
+import akka.remote.RemotingLifecycleEvent;
 import akka.util.Timeout;
+import com.nils.entities.transport.Error;
 import com.nils.entities.transport.Request;
 import com.nils.entities.transport.Response;
-import com.nils.entities.transport.Error;
+import com.transport.actor.AssotiationActor;
 import com.typesafe.config.ConfigFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +20,6 @@ import scala.concurrent.Await;
 import scala.concurrent.ExecutionContext;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
-import scala.concurrent.duration.FiniteDuration;
 
 import java.io.Serializable;
 import java.util.LinkedList;
@@ -25,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static akka.dispatch.Futures.fold;
 import static akka.dispatch.Futures.sequence;
 
 /**
@@ -44,6 +45,7 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
         system = ActorSystem.create("feactorsystem", ConfigFactory.load().getConfig("feconfig"));
         String remotePath = "akka.tcp://beactorsystem@127.0.0.1:2554/user/BEMasterActor";
         ActorSelection actorSelection = system.actorSelection(remotePath);
+        ActorRef assotiationActor = system.actorOf(Props.create(AssotiationActor.class));
         Future<ActorRef> actorLocalRefFuture = actorSelection.resolveOne(new Timeout(Duration.create(secondsTimeout, TimeUnit.SECONDS)));
         try {
             logger.info("Acquiring BEMasterActor handle...");
@@ -53,6 +55,8 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
             logger.info("Failed to acquire BEMasterActor handle!!!", e);
             throw new Exception("Failed to acquire BEMasterActor handle");
         }
+        system.eventStream().subscribe(assotiationActor,RemotingLifecycleEvent.class);
+
     }
 
     @Override
