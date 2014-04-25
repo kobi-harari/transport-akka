@@ -28,6 +28,8 @@ public class UserOrchExampleActor extends UntypedActor {
     private ActorRef orderActor;
     private ActorRef orderItemActor;
 
+    private ActorRef originalSender;
+
     private Logger logger = LoggerFactory.getLogger(UserOrchExampleActor.class);
     @Override
     public void onReceive(Object message) throws Exception {
@@ -50,6 +52,7 @@ public class UserOrchExampleActor extends UntypedActor {
 
     @Override
     public void preStart(){
+        logger.info("in preStart of the UserOrchExampleActor");
         this.userActor  = getContext().actorOf(Props.create(UserActor.class, IocInitializer.getInstance().getInjector()), "userActor");
         this.accountActor  = getContext().actorOf(Props.create(AccountActor.class, IocInitializer.getInstance().getInjector()), "accountActor");
         this.orderActor  = getContext().actorOf(Props.create(OrderActor.class, IocInitializer.getInstance().getInjector()), "orderActor");
@@ -58,29 +61,32 @@ public class UserOrchExampleActor extends UntypedActor {
 
     private void getOrderItem(Request request) {
         logger.debug("getOrderItem was called in UserOrchExampleActor");
+        setOriginalSender(getSender());
         List<String> ids = (List<String>) request.getMessage();
-        Request userRequest = new Request(null, User.class.getSimpleName(), Request.Action.GET, (Serializable)ids);
+        Request userRequest = new Request(null, Order.class.getSimpleName(), Request.Action.GET, (Serializable)ids);
         orderItemActor.tell(userRequest,getSelf());
     }
 
     private void getOrder(Response response){
         logger.debug("getOrder was called in UserOrchExampleActor");
         List<OrderItem> orderItems = (List<OrderItem>) response.getMessage();
-        validateOrderItemResult(orderItems);
-        OrderItem orderItem  = orderItems.get(0);
-        String orderId = orderItem.getOrderId();
-        Request request  = new Request(null, Order.class.getSimpleName(), Request.Action.GET, (Serializable)Arrays.asList(orderId));
-        orderActor.tell(request, getSelf());
+        if(validateOrderItemResult(orderItems)){
+            OrderItem orderItem  = orderItems.get(0);
+            String orderId = orderItem.getOrderId();
+            Request request  = new Request(null, Account.class.getSimpleName(), Request.Action.GET, (Serializable)Arrays.asList(orderId));
+            orderActor.tell(request, getSelf());
+        }
     }
 
     private void getAccount(Response response){
         logger.debug("getAccount was called in UserOrchExampleActor");
         List<Order> orders = (List<Order>) response.getMessage();
-        validateOrderResult(orders);
-        Order order = orders.get(0);
-        String accountId = order.getAccountId();
-        Request request = new Request(null, Account.class.getSimpleName(), Request.Action.GET, (Serializable)Arrays.asList(accountId));
-        accountActor.tell(request,getSelf());
+        if(validateOrderResult(orders)){
+            Order order = orders.get(0);
+            String accountId = order.getAccountId();
+            Request request = new Request(null, User.class.getSimpleName(), Request.Action.GET, (Serializable)Arrays.asList(accountId));
+            accountActor.tell(request,getSelf());
+        }
     }
 
     private void getUsers(Response response){
@@ -91,7 +97,8 @@ public class UserOrchExampleActor extends UntypedActor {
         Map<String,String> properties = new HashMap<>();
         properties.put("userByAccountId",account.getId());
         Request request = new Request(null, User.class.getSimpleName(), Request.Action.FIND_BY_PROPERTY,(Serializable) properties);
-        userActor.tell(request,getSender());
+        userActor.tell(request,this.originalSender);
+        this.originalSender = null;
     }
 
     private boolean validateOrderItemResult(List<OrderItem> orderItems){
@@ -106,5 +113,12 @@ public class UserOrchExampleActor extends UntypedActor {
         logger.debug("logic for validation of an account");
         return true;
     }
+
+    private void setOriginalSender(ActorRef actorRef){
+        if (originalSender == null){
+            originalSender = actorRef;
+        }
+    }
+
 }
 

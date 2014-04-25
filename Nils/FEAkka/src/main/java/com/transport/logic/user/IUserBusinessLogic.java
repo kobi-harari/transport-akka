@@ -16,4 +16,6 @@ public interface IUserBusinessLogic extends IBaseBusinessLogic<User, String> {
     void getUsersAndAccount(List<String> userIds, List<String> accountIds, final List<User> users, List<Account> accounts);
 
     List<User> getUsersByOrderItemId(String orderItemId);
+
+    List<User> getUsersByOrderItemIdWithActor(String orderItemId);
 }

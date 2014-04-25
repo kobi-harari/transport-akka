@@ -70,6 +70,11 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
     }
 
     @Override
+    public void findByIdsWithActor(String entityType, List<ID> ids, ICallBack callBack) {
+        executeRequest(new Request(null, entityType, Request.Action.GET, (Serializable) ids), callBack);
+    }
+
+    @Override
     public void findByProperties(String entityType, Map<String, ID> properties, ICallBack callBack) {
         executeRequest(new Request(null, entityType, Request.Action.FIND_BY_PROPERTY,(Serializable)properties), callBack);
     }

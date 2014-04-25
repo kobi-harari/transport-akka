@@ -3,10 +3,7 @@ package com.akka.actor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
-import com.akka.actor.logic.AccountActor;
-import com.akka.actor.logic.OrderActor;
-import com.akka.actor.logic.OrderItemActor;
-import com.akka.actor.logic.UserActor;
+import com.akka.actor.logic.*;
 import com.akka.system.IocInitializer;
 import com.akka.system.SystemModule;
 import com.google.inject.Module;
@@ -29,6 +26,7 @@ public class BEMasterActor extends UntypedActor {
     private final ActorRef accountActor;
     private final ActorRef orderActor;
     private final ActorRef orderItemActor;
+    private final ActorRef userOrcActor;
 
 
     public BEMasterActor() {
@@ -47,6 +45,8 @@ public class BEMasterActor extends UntypedActor {
                 Props.create(OrderActor.class, IocInitializer.getInstance().getInjector()), "orderActor");
         orderItemActor = getContext().actorOf(
                 Props.create(OrderItemActor.class, IocInitializer.getInstance().getInjector()), "orderItemActor");
+        userOrcActor = getContext().actorOf(
+                Props.create(UserOrchExampleActor.class));
     }
 
     @Override
@@ -59,6 +59,10 @@ public class BEMasterActor extends UntypedActor {
                     case "User":
                         logger.info("BEMasterActor forwarding msg to UserActor, {}", message);
                         userActor.forward(message, getContext());
+                        break;
+                    case "UserOrc":
+                        logger.info("BEMasterActor forwarding msg to userOrcActor, {}", message);
+                        userOrcActor.forward(message, getContext());
                         break;
                     case "Account":
                         logger.info("BEMasterActor forwarding msg to AccountActor, {}", message);

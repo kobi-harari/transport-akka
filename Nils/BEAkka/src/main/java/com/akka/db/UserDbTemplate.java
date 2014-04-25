@@ -25,6 +25,7 @@ public class UserDbTemplate<User, String> extends DbTemplate implements IUserOpe
     @Override
     public List<User> findByProperties(Map properties) {
         Query query = new Query();
+        query.setStale(Stale.FALSE);
         query.setIncludeDocs(true);
 
         Set keys = properties.keySet();

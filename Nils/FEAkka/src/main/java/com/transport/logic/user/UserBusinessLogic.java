@@ -129,6 +129,23 @@ public class UserBusinessLogic extends FEBusinessLogic<User, String> implements 
         return users;
     }
 
+    public List<User> getUsersByOrderItemIdWithActor(final String orderItemId) {
+        logger.debug("called getUsersByOrderItemIdWithActor with orderItemId {}",orderItemId);
+        final List<User> users =  new LinkedList<>();
+        transportLayer.findByIdsWithActor("UserOrc",Arrays.asList(orderItemId),new ICallBack() {
+            @Override
+            public void onResponse(Response response) {
+                users.addAll((List<User>) response.getMessage());
+            }
+
+            @Override
+            public void onError(Error error) {
+                logger.error("something went wrong", error);
+            }
+        });
+        return users;
+    }
+
     @Override
     public List<User> findByProperties(Map<String, Object> propertise) {
         return null;

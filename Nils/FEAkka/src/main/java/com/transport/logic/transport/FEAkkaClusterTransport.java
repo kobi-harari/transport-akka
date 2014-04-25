@@ -57,6 +57,11 @@ public class FEAkkaClusterTransport<T, ID extends Serializable> implements ITran
     }
 
     @Override
+    public void findByIdsWithActor(String entityType, List<ID> ids, ICallBack callBack) {
+
+    }
+
+    @Override
     public void findByProperties(String entityType, Map<String, ID> properties, ICallBack callBack) {
 
     }

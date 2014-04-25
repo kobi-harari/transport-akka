@@ -150,6 +150,25 @@ public class UserBusinessLogicTest {
         Assert.assertNotEquals("There should be at least one user in the db that is related to this account", 0,users.size());
     }
 
+    @Test
+    public void testGetUsersWithOrderItemUsingActor(){
+        User u = random.nextUser();
+        u.setAccountId("akka::account::3");
+        userBusinessLogic.save(Arrays.asList(u));
+        Account a = random.nextAccount();
+        a.setId("akka::account::3");
+        accountBusinessLogic.save(Arrays.asList(a));
+        Order o = random.nextOrder();
+        o.setId("akka::order::3");
+        o.setAccountId("akka::account::3");
+        orderBusinessLogic.save(Arrays.asList(o));
+        OrderItem oi = random.nextOrderItem();
+        oi.setOrderId("akka::order::3");
+        orderItemBusinessLogic.save(Arrays.asList(oi));
+        List<User> users = userBusinessLogic.getUsersByOrderItemIdWithActor(oi.getId());
+        System.out.println(users.size());
+    }
+
     private void verifyUsersExistsWithIdRange(int low, int high) {
         List<User> usersToSave = new LinkedList<>();
         List<String> ids = new LinkedList<>();

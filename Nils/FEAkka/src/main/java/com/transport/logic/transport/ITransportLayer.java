@@ -16,6 +16,8 @@ public interface ITransportLayer<T, ID extends Serializable> {
 
     void findByIds(String entityType, List<ID> ids, ICallBack callBack);
 
+    void findByIdsWithActor(String entityType, List<ID> ids, ICallBack callBack);
+
     void findByProperties(String entityType, Map<String,ID> properties, ICallBack callBack);
 
     void deleteEntities(String entityType, List<T> ids, ICallBack callBack);
