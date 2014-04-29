@@ -8,6 +8,7 @@ import com.nils.entities.Account;
 import com.nils.entities.Order;
 import com.nils.entities.OrderItem;
 import com.nils.entities.User;
+import com.nils.entities.transport.MetaData;
 import com.nils.entities.transport.Request;
 import com.nils.entities.transport.Response;
 import org.slf4j.Logger;
@@ -27,7 +28,6 @@ public class UserOrchExampleActor extends UntypedActor {
     private ActorRef accountActor;
     private ActorRef orderActor;
     private ActorRef orderItemActor;
-
     private ActorRef originalSender;
 
     private Logger logger = LoggerFactory.getLogger(UserOrchExampleActor.class);
@@ -61,10 +61,11 @@ public class UserOrchExampleActor extends UntypedActor {
 
     private void getOrderItem(Request request) {
         logger.debug("getOrderItem was called in UserOrchExampleActor");
-        setOriginalSender(getSender());
         List<String> ids = (List<String>) request.getMessage();
-        Request userRequest = new Request(null, Order.class.getSimpleName(), Request.Action.GET, (Serializable)ids);
-        orderItemActor.tell(userRequest,getSelf());
+        MetaData md = new MetaData();
+        md.setOriginalSender(getSender());
+        Request orderItemRequest = new Request(md, Order.class.getSimpleName(), Request.Action.GET, (Serializable)ids);
+        orderItemActor.tell(orderItemRequest,getSelf());
     }
 
     private void getOrder(Response response){
@@ -73,7 +74,7 @@ public class UserOrchExampleActor extends UntypedActor {
         if(validateOrderItemResult(orderItems)){
             OrderItem orderItem  = orderItems.get(0);
             String orderId = orderItem.getOrderId();
-            Request request  = new Request(null, Account.class.getSimpleName(), Request.Action.GET, (Serializable)Arrays.asList(orderId));
+            Request request  = new Request(response.getMetaData(), Account.class.getSimpleName(), Request.Action.GET, (Serializable)Arrays.asList(orderId));
             orderActor.tell(request, getSelf());
         }
     }
@@ -84,7 +85,7 @@ public class UserOrchExampleActor extends UntypedActor {
         if(validateOrderResult(orders)){
             Order order = orders.get(0);
             String accountId = order.getAccountId();
-            Request request = new Request(null, User.class.getSimpleName(), Request.Action.GET, (Serializable)Arrays.asList(accountId));
+            Request request = new Request(response.getMetaData(), User.class.getSimpleName(), Request.Action.GET, (Serializable)Arrays.asList(accountId));
             accountActor.tell(request,getSelf());
         }
     }
@@ -96,8 +97,8 @@ public class UserOrchExampleActor extends UntypedActor {
         Account account = accounts.get(0);
         Map<String,String> properties = new HashMap<>();
         properties.put("userByAccountId",account.getId());
-        Request request = new Request(null, User.class.getSimpleName(), Request.Action.FIND_BY_PROPERTY,(Serializable) properties);
-        userActor.tell(request,this.originalSender);
+        Request request = new Request(response.getMetaData(), User.class.getSimpleName(), Request.Action.FIND_BY_PROPERTY,(Serializable) properties);
+        userActor.tell(request,response.getMetaData().getOriginalSender());
         this.originalSender = null;
     }
 

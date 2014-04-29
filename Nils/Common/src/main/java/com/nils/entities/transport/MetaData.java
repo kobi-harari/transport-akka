@@ -1,5 +1,7 @@
 package com.nils.entities.transport;
 
+import akka.actor.ActorRef;
+
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -9,6 +11,7 @@ import java.util.UUID;
 public class MetaData implements Serializable {
 
     final String trackingId;
+    ActorRef originalSender;
 
     public MetaData() {
         trackingId = UUID.randomUUID().toString();
@@ -22,4 +25,11 @@ public class MetaData implements Serializable {
         return trackingId;
     }
 
+    public ActorRef getOriginalSender() {
+        return originalSender;
+    }
+
+    public void setOriginalSender(ActorRef originalSender) {
+        this.originalSender = originalSender;
+    }
 }
