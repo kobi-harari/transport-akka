@@ -12,7 +12,7 @@ import akka.util.Timeout;
 import com.nils.entities.transport.Error;
 import com.nils.entities.transport.Request;
 import com.nils.entities.transport.Response;
-import com.transport.actor.AssotiationActor;
+//import com.transport.actor.AssotiationActor;
 import com.typesafe.config.ConfigFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +45,7 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
         system = ActorSystem.create("feactorsystem", ConfigFactory.load().getConfig("feconfig"));
         String remotePath = "akka.tcp://beactorsystem@127.0.0.1:2554/user/BEMasterActor";
         ActorSelection actorSelection = system.actorSelection(remotePath);
-        ActorRef assotiationActor = system.actorOf(Props.create(AssotiationActor.class));
+//        ActorRef assotiationActor = system.actorOf(Props.create(AssotiationActor.class));
         Future<ActorRef> actorLocalRefFuture = actorSelection.resolveOne(new Timeout(Duration.create(secondsTimeout, TimeUnit.SECONDS)));
         try {
             logger.info("Acquiring BEMasterActor handle...");
@@ -55,8 +55,7 @@ public class FEAkkaTransport<T, ID extends Serializable> implements ITransportLa
             logger.info("Failed to acquire BEMasterActor handle!!!", e);
             throw new Exception("Failed to acquire BEMasterActor handle");
         }
-        system.eventStream().subscribe(assotiationActor,RemotingLifecycleEvent.class);
-
+//        system.eventStream().subscribe(assotiationActor,RemotingLifecycleEvent.class);
     }
 
     @Override
