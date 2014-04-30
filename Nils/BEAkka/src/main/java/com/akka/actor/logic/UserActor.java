@@ -11,6 +11,7 @@ import com.google.inject.Injector;
 import com.nils.entities.User;
 import com.nils.entities.transport.Request;
 import com.nils.entities.transport.Response;
+import org.apache.commons.lang.UnhandledException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,6 +72,9 @@ public class UserActor extends UntypedActor {
             }
             getSender().tell(response, getSelf());
         } else {
+            if(message instanceof User){
+                throw new Exception("Error! un-handle type");
+            }
             logger.error("unhandled message");
             unhandled(message);
         }
