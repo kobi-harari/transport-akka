@@ -3,6 +3,7 @@ package com.akka.actors.logic;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.pattern.Patterns;
+import akka.testkit.JavaTestKit;
 import akka.testkit.TestActorRef;
 import akka.util.Timeout;
 import com.akka.actor.logic.UserActor;
@@ -14,6 +15,7 @@ import com.google.inject.Provides;
 import com.nils.entities.User;
 import com.nils.entities.transport.Request;
 import com.nils.entities.transport.Response;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -34,7 +36,7 @@ import java.util.concurrent.TimeUnit;
 public class UserActorTest {
 
     //    private static ActorSystem system = ActorSystem.create("beactorsystem", ConfigFactory.load().getConfig("beconfig"));
-    private static ActorSystem system = ActorSystem.create("testactorsystem");
+    private static ActorSystem system = ActorSystem.create();
     private static UserActor userActor;
     private static TestActorRef<UserActor> userActorRef;
     private static IBEUserBusinessLogic beUserBusinessLogic;
@@ -61,6 +63,12 @@ public class UserActorTest {
 
         userActorRef = TestActorRef.create(system, props, "testSystem");
         userActor = userActorRef.underlyingActor();
+    }
+
+    @AfterClass
+    public static void tearDown(){
+        JavaTestKit.shutdownActorSystem(system);
+        system = null;
     }
 
     @Test

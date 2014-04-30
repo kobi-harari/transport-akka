@@ -1,19 +1,24 @@
 package com.akka.actor;
 
-import akka.actor.ActorRef;
-import akka.actor.Props;
-import akka.actor.UntypedActor;
+import akka.actor.*;
+import akka.japi.Function;
 import com.akka.actor.logic.*;
 import com.akka.system.IocInitializer;
 import com.akka.system.SystemModule;
 import com.google.inject.Module;
 import com.nils.entities.transport.Error;
 import com.nils.entities.transport.Request;
+import com.sun.xml.internal.messaging.saaj.packaging.mime.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scala.concurrent.duration.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static akka.actor.SupervisorStrategy.escalate;
+import static akka.actor.SupervisorStrategy.resume;
+import static akka.actor.SupervisorStrategy.stop;
 
 /**
  * Created by uri.silberstein on 4/3/14.
@@ -70,11 +75,11 @@ public class BEMasterActor extends UntypedActor {
                         break;
                     case "OrderItem":
                         logger.info("BEMasterActor forwarding msg to AccountActor, {}", message);
-                        accountActor.forward(message, getContext());
+                        orderItemActor.forward(message, getContext());
                         break;
                     case "Order":
                         logger.info("BEMasterActor forwarding msg to AccountActor, {}", message);
-                        accountActor.forward(message, getContext());
+                        orderActor.forward(message, getContext());
                         break;
                     default:
                         logger.error("This service {} is not available", ((Request) message).getService());
@@ -89,27 +94,27 @@ public class BEMasterActor extends UntypedActor {
         }
     }
 
-//    /**
-//     * Strategy for Master Actor children
-//     */
-//    private static SupervisorStrategy strategy =
-//            new OneForOneStrategy(10, Duration.create("1 minute"),
-//                    new Function<Throwable, SupervisorStrategy.Directive>() {
-//                        @Override
-//                        public SupervisorStrategy.Directive apply(Throwable t) {
-//                            if (t instanceof MessagingException) {
-//                                return resume();
-//                            } else if (t instanceof Exception) {
-//                                return stop();
-//                            } else {
-//                                return escalate();
-//                            }
-//                        }
-//                    });
-//
-//    @Override
-//    public SupervisorStrategy supervisorStrategy() {
-//        return strategy;
-//    }
+    /**
+     * Strategy for Master Actor children
+     */
+    private static SupervisorStrategy strategy =
+            new OneForOneStrategy(10, Duration.create("1 minute"),
+                    new Function<Throwable, SupervisorStrategy.Directive>() {
+                        @Override
+                        public SupervisorStrategy.Directive apply(Throwable t) {
+                            if (t instanceof MessagingException) {
+                                return resume();
+                            } else if (t instanceof Exception) {
+                                return stop();
+                            } else {
+                                return escalate();
+                            }
+                        }
+                    });
+
+    @Override
+    public SupervisorStrategy supervisorStrategy() {
+        return strategy;
+    }
 
 }
