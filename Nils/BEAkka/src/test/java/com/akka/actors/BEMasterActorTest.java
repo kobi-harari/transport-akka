@@ -6,6 +6,7 @@ import akka.actor.Props;
 import akka.pattern.Patterns;
 import akka.testkit.JavaTestKit;
 import akka.testkit.TestActorRef;
+import akka.testkit.TestKit;
 import akka.util.Timeout;
 import com.akka.actor.BEMasterActor;
 import com.akka.actor.logic.UserActor;
@@ -37,13 +38,17 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by uri.silberstein on 4/10/14.
  */
-public class BEMasterActorTest {
+public class BEMasterActorTest extends TestKit {
 
     private static ActorSystem system = ActorSystem.create();
     private static BEMasterActor beMasterActor;
     private static TestActorRef<BEMasterActor> beMasterActorRef;
 
     final private static long TIMEOUT_SECONDS = 5;
+
+    public BEMasterActorTest() {
+        super(system);
+    }
 
     @BeforeClass
     public static void setup() {
@@ -53,15 +58,23 @@ public class BEMasterActorTest {
     }
 
     @AfterClass
-    public static void tearDown(){
+    public static void tearDown() {
         JavaTestKit.shutdownActorSystem(system);
         system = null;
     }
 
     @Test
     public void simpleBEMasterActor() throws Exception {
-        final JavaTestKit probe = new JavaTestKit(system);
+        Props userActorProps = Props.create(UserActor.class, "userActor");
 
+
+        Request request = new Request(null, "User", Request.Action.GET, (Serializable) Arrays.asList("1"));
+        beMasterActorRef.tell(request, testActor());
+        expectMsg(request);
+
+        System.out.println("sss");
+
+        final JavaTestKit probe = new JavaTestKit(system);
 //        new JavaTestKit(system) {{
 //            //create a probe instance to capture all messages passed to child
 //            final JavaTestKit childProbe = new JavaTestKit(system);

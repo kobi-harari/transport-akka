@@ -38,12 +38,15 @@ public class UserOrchExampleActor extends UntypedActor {
             getOrderItem((Request)message);
         } else {
             Response response = (Response) message;
+
             if (response.getService().equals("Order")) {
                 getOrder(response);
             }
+
             if (response.getService().equals("Account")) {
                 getAccount(response);
             }
+
             if (response.getService().equals("User")) {
                 getUsers(response);
             }

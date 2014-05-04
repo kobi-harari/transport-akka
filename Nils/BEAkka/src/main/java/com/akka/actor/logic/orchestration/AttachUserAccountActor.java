@@ -39,20 +39,17 @@ public class AttachUserAccountActor extends UntypedActor {
     }
 
     @Override
-    public void onReceive(Object o) throws Exception {
-
-        if(o instanceof AttachUserAccountMessage){
-            AttachUserAccountMessage message = (AttachUserAccountMessage)o;
+    public void onReceive(Object message) throws Exception {
+        if(message instanceof AttachUserAccountMessage){
             MetaData md = new MetaData();
             md.setOriginalSender(getSender());
-            Request request  = new Request(md, User.class.getSimpleName(), Request.Action.GET, (Serializable) Arrays.asList(message.getUserId()));
+            Request request  = new Request(md, User.class.getSimpleName(), Request.Action.GET, (Serializable) Arrays.asList(((AttachUserAccountMessage)message).getUserId()));
             userActor.tell(request,getSelf());
-            request  = new Request(md, Account.class.getSimpleName(), Request.Action.GET, (Serializable) Arrays.asList(message.getAccountId()));
+            request  = new Request(md, Account.class.getSimpleName(), Request.Action.GET, (Serializable) Arrays.asList(((AttachUserAccountMessage)message).getAccountId()));
             accountActor.tell(request,getSelf());
         }
-
-        if(o instanceof Response){
-            Response response = (Response)o;
+        if(message instanceof Response){
+            Response response = (Response)message;
 
             if(response.getService().equals("User")){
                 metaDataUserMap.put(response.getMetaData(),((List<User>)response.getMessage()).get(0));
@@ -65,6 +62,8 @@ public class AttachUserAccountActor extends UntypedActor {
                 //We got both results for
                 logger.info("Attaching User {} to Account {}", metaDataUserMap.get(response.getMetaData()).getId(), metaDataAccountMap.get(response.getMetaData()).getId());
                 response.getMetaData().getOriginalSender().tell(new String("Attached is done!"),getSender());
+                metaDataAccountMap.remove(response.getMetaData());
+                metaDataAccountMap.remove(response.getMetaData());
             }
         }
     }
